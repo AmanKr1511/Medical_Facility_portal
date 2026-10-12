@@ -1,0 +1,133 @@
+/* ----- Home ----- */
+.section__link {
+  color: var(--c-muted);
+  font-size: 14px;
+}
+.section__link:hover {
+  color: var(--c-text);
+}
+
+.slot-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: var(--space-5);
+}
+.slot-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+}
+.slot-card__details {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.slot-card__details > div,
+.visit-card dl > div {
+  display: flex;
+  gap: var(--space-3);
+}
+.slot-card dt,
+.visit-card dt {
+  font-weight: 700;
+  min-width: 96px;
+}
+.slot-card dd,
+.visit-card dd {
+  margin: 0;
+  color: var(--c-muted);
+}
+
+.appt-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-5);
+}
+.appt-card__info {
+  flex: 1;
+  min-width: 0;
+}
+.appt-card__doctor {
+  font-size: 17px;
+  font-weight: 700;
+}
+.appt-card__meta {
+  color: var(--c-muted);
+}
+
+/* ----- Visit History ----- */
+.filter-bar {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr auto;
+  gap: var(--space-4);
+  align-items: end;
+  margin: var(--space-4) 0 var(--space-5);
+  background: var(--c-surface-alt);
+}
+
+.timeline {
+  position: relative;
+  list-style: none;
+  margin: 0;
+  padding: 0 0 0 52px;
+  display: grid;
+  gap: var(--space-4);
+}
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 11px;
+  top: 12px;
+  bottom: 12px;
+  width: 2px;
+  background: var(--c-border-strong);
+}
+.timeline__item {
+  position: relative;
+}
+.timeline__dot {
+  position: absolute;
+  left: -52px;
+  top: 50%;
+  width: 22px;
+  height: 22px;
+  margin-top: -11px;
+  border-radius: 50%;
+  border: 2.5px solid var(--c-border-strong);
+  background: var(--c-surface);
+}
+
+.visit-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) 1.4fr auto;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+}
+.visit-card dl {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+.visit-card__complaint {
+  display: flex !important;
+  gap: var(--space-3);
+}
+
+@media (max-width: 900px) {
+  .filter-bar {
+    grid-template-columns: 1fr;
+  }
+  .visit-card {
+    grid-template-columns: 1fr;
+    gap: var(--space-3);
+  }
+  .visit-card button {
+    justify-self: start;
+  }
+  .appt-card {
+    flex-wrap: wrap;
+  }
+}
