@@ -1,0 +1,135 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.shell__topbar {
+  height: var(--topbar-h);
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-5);
+  background: var(--c-topbar);
+  border-bottom: 1.5px solid var(--c-border);
+}
+.shell__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+.shell__user {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+.shell__user-name {
+  font-weight: 600;
+}
+.shell__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid var(--c-border-strong);
+  background: var(--c-surface);
+  color: var(--c-muted);
+  cursor: pointer;
+}
+
+.shell__body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+.shell__sidebar {
+  width: var(--sidebar-w);
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-4);
+  background: var(--c-sidebar);
+  border-right: 1.5px solid var(--c-border);
+}
+.shell__nav {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.shell__link {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 12px 14px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--c-muted);
+  text-decoration: none;
+  font-size: 16px;
+  text-align: left;
+  cursor: pointer;
+}
+.shell__link:hover {
+  background: var(--c-nav-active);
+  color: var(--c-text);
+}
+.shell__link.is-active {
+  background: var(--c-nav-active);
+  color: var(--c-text);
+  font-weight: 700;
+}
+.shell__footer {
+  margin-top: auto;
+  padding-top: var(--space-3);
+  border-top: 1.5px solid var(--c-border);
+}
+
+.shell__content {
+  flex: 1;
+  min-width: 0;
+  padding: var(--space-5) var(--space-6) var(--space-6);
+}
+
+@media (max-width: 800px) {
+  .shell__body {
+    flex-direction: column;
+  }
+  .shell__sidebar {
+    width: auto;
+    flex-direction: row;
+    align-items: center;
+    padding: var(--space-2) var(--space-3);
+    border-right: none;
+    border-bottom: 1.5px solid var(--c-border);
+    overflow-x: auto;
+  }
+  .shell__nav {
+    flex-direction: row;
+  }
+  .shell__link {
+    white-space: nowrap;
+    padding: 8px 12px;
+  }
+  .shell__footer {
+    margin: 0 0 0 auto;
+    padding: 0;
+    border-top: none;
+  }
+  .shell__content {
+    padding: var(--space-4);
+  }
+  .shell__user-name {
+    display: none;
+  }
+}
