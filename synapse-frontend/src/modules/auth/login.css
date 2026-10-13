@@ -1,0 +1,220 @@
+/* ===== SYNapse Login Styles ===== */
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: linear-gradient(180deg, var(--c-surface-alt) 0%, #e8ebf0 100%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  box-shadow: 0 10px 30px rgba(22, 28, 39, 0.08);
+}
+
+.login-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--c-text);
+  margin-bottom: 6px;
+}
+
+.login-subtitle {
+  text-align: center;
+  color: var(--c-muted);
+  font-size: 14px;
+  margin-bottom: 28px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.login-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--c-text);
+}
+
+.login-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.login-select {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-size: 14.5px;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg fill='none' stroke='%235b6575' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  padding-right: 38px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.login-select:focus {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px var(--c-accent-soft);
+}
+
+.login-input {
+  width: 100%;
+  padding: 11px 14px;
+  border: 1.5px solid var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  color: var(--c-text);
+  font-size: 14.5px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.login-input:focus {
+  outline: none;
+  border-color: var(--c-accent);
+  box-shadow: 0 0 0 3px var(--c-accent-soft);
+}
+
+.login-password-group {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.login-password-group .login-input {
+  padding-right: 42px;
+}
+
+.login-password-toggle {
+  position: absolute;
+  right: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  color: var(--c-muted);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: color 0.15s, background 0.15s;
+}
+
+.login-password-toggle:hover {
+  color: var(--c-text);
+  background: var(--c-surface-alt);
+}
+
+.login-role-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-border);
+  font-size: 13px;
+  color: var(--c-muted);
+}
+
+.login-role-indicator strong {
+  color: var(--c-text);
+}
+
+.login-error-msg {
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: var(--c-danger);
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.login-submit-btn {
+  width: 100%;
+  padding: 12px 18px;
+  font-size: 15px;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+.login-demo-section {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--c-border);
+}
+
+.login-demo-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.login-demo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.login-demo-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 8px 6px;
+  border: 1px dashed var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  cursor: pointer;
+  transition: all 0.15s;
+  text-align: center;
+}
+
+.login-demo-chip:hover {
+  background: var(--c-accent-soft);
+  border-color: var(--c-accent);
+  border-style: solid;
+}
+
+.login-demo-chip-role {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--c-primary);
+}
+
+.login-demo-chip-id {
+  font-size: 11px;
+  color: var(--c-muted);
+}

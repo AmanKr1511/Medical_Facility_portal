@@ -1,6 +1,6 @@
 # SYNapse Frontend
 
-React (Vite) frontend for the medical center portal. Currently contains the **patient** and **pharmacist** interfaces and a development login page. Doctor UI has intentionally been removed and can be added later.
+React (Vite) frontend for the medical center portal. Currently contains the **patient**, **doctor**, and **pharmacist** interfaces and a unified multi-role login page.
 
 ```bash
 npm install
@@ -36,7 +36,7 @@ Edit `src/modules/auth/` only. The contract with the rest of the app:
 
 ```jsx
 const { login } = useAuth();
-login({ user: { id, name, role }, token });          // role: 'patient' | 'pharmacist'
+login({ user: { id, name, role }, token });          // role: 'patient' | 'doctor' | 'pharmacist'
 navigate(homePathForRole(role), { replace: true });
 ```
 
