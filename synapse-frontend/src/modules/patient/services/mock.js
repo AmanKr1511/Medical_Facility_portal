@@ -45,3 +45,13 @@ export const mockVisits = [
     medicines: ['Ibuprofen 400mg', 'Diclofenac gel'],
   },
 ];
+
+export const mockPatientProfile = {
+  id: 'p-101',
+  name: 'Aarav Sharma',
+  age: 21,
+  gender: 'Male',
+  email: 'aarav.sharma@example.com',
+  contact: '+91 98765 43210',
+};
+

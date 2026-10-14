@@ -1,0 +1,61 @@
+import { isoDay } from '../../../core/api/mockUtils';
+
+export const mockDoctors = [
+  {
+    id: 'doc-meera',
+    name: 'Dr. Meera Iyer',
+    qualification: 'MBBS, MD',
+    cabin: 'OPD Room 102',
+    experience: '12 years',
+    avatarText: 'MI',
+    availableDates: [isoDay(0), isoDay(1), isoDay(2), isoDay(3)],
+    slots: ['09:30 AM', '10:15 AM', '11:00 AM', '11:45 AM', '02:30 PM', '03:15 PM', '04:00 PM'],
+  },
+  {
+    id: 'doc-kabir',
+    name: 'Dr. Kabir Singh',
+    qualification: 'MBBS',
+    cabin: 'OPD Room 103',
+    experience: '8 years',
+    avatarText: 'KS',
+    availableDates: [isoDay(1), isoDay(2), isoDay(4)],
+    slots: ['10:00 AM', '10:45 AM', '11:30 AM', '03:00 PM', '03:45 PM'],
+  },
+  {
+    id: 'doc-anita',
+    name: 'Dr. Anita Rao',
+    qualification: 'MBBS',
+    cabin: 'OPD Room 104',
+    experience: '15 years',
+    avatarText: 'AR',
+    availableDates: [isoDay(0), isoDay(2), isoDay(3)],
+    slots: ['09:00 AM', '09:45 AM', '10:30 AM', '02:00 PM', '02:45 PM', '04:15 PM'],
+  },
+  {
+    id: 'doc-rajesh',
+    name: 'Dr. Rajesh Sharma',
+    qualification: 'MBBS',
+    cabin: 'OPD Room 105',
+    experience: '10 years',
+    avatarText: 'RS',
+    availableDates: [isoDay(1), isoDay(3), isoDay(4)],
+    slots: ['11:00 AM', '11:30 AM', '12:00 PM', '03:30 PM', '04:15 PM'],
+  },
+];
+
+export const DEPARTMENTS = [
+  'Computer Science and Engineering',
+  'Electrical Engineering',
+  'Mechanical Engineering',
+  'Civil Engineering',
+  'Chemical Engineering',
+  'Biomedical Engineering',
+  'Metallurgical and Materials Engineering',
+  'Physics',
+  'Chemistry',
+  'Mathematics',
+  'Humanities and Social Sciences',
+  'Institute Administration / Staff',
+  'Campus Resident / Family',
+  'Other',
+];

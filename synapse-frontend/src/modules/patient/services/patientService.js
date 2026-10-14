@@ -1,5 +1,5 @@
 import { delay } from '../../../core/api/mockUtils';
-import { mockAvailableSlots, mockUpcomingAppointment, mockVisits } from './mock';
+import { mockAvailableSlots, mockPatientProfile, mockUpcomingAppointment, mockVisits } from './mock';
 
 /**
  * Patient data access. Pages import ONLY from this file.
@@ -13,7 +13,34 @@ import { mockAvailableSlots, mockUpcomingAppointment, mockVisits } from './mock'
  *   date is ISO "YYYY-MM-DD"; time is display text, e.g. "04:30 PM"
  * @typedef {TimeSlot} Appointment
  * @typedef {{ id: string, date: string, doctorName: string, complaint: string, medicines: string[] }} Visit
+ * @typedef {{ id: string, name: string, age: number, gender: string, email: string, contact: string }} PatientProfile
  */
+
+/** @returns {Promise<PatientProfile>} patient profile details */
+export async function getPatientProfile() {
+  await delay(120);
+  return { ...mockPatientProfile };
+}
+
+/**
+ * @param {Partial<PatientProfile>} updated
+ * @returns {Promise<PatientProfile>}
+ */
+export async function updatePatientProfile(updated) {
+  await delay(200);
+  Object.assign(mockPatientProfile, updated);
+  return { ...mockPatientProfile };
+}
+
+/**
+ * @param {{ currentPassword?: string, newPassword?: string }} _params
+ * @returns {Promise<{ success: boolean, message: string }>}
+ */
+export async function changePatientPassword(_params) {
+  await delay(250);
+  return { success: true, message: 'Password changed successfully.' };
+}
+
 
 /** @returns {Promise<TimeSlot[]>} upcoming open slots to show on Home */
 export async function getAvailableSlots() {

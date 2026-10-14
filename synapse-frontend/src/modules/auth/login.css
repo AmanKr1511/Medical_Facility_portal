@@ -5,19 +5,164 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: var(--space-4);
+  padding: var(--space-5) var(--space-4);
   background: linear-gradient(180deg, var(--c-surface-alt) 0%, #e8ebf0 100%);
+}
+
+.login-layout-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-6);
+  max-width: 960px;
+  width: 100%;
+  align-items: stretch;
 }
 
 .login-card {
   width: 100%;
-  max-width: 440px;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: 36px 32px;
+  box-shadow: 0 10px 30px rgba(22, 28, 39, 0.08);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Right side: Appointment portal card */
+.appointment-portal-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
   background: var(--c-surface);
   border: 1.5px solid var(--c-border);
   border-radius: var(--radius-lg);
   padding: 36px 32px;
   box-shadow: 0 10px 30px rgba(22, 28, 39, 0.08);
 }
+
+.appointment-portal-badge {
+  align-self: flex-start;
+  padding: 4px 12px;
+  border-radius: 100px;
+  background: var(--c-accent-soft);
+  color: var(--c-accent);
+  font-size: 11.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-3);
+}
+
+.appointment-portal-icon {
+  width: 54px;
+  height: 54px;
+  border-radius: var(--radius-md);
+  background: var(--c-accent-soft);
+  color: var(--c-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-3);
+}
+
+.appointment-portal-title {
+  font-size: 24px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: var(--c-text);
+  letter-spacing: -0.01em;
+}
+
+.appointment-portal-subtitle {
+  font-size: 14.5px;
+  color: var(--c-muted);
+  line-height: 1.5;
+  margin: 0 0 var(--space-4);
+}
+
+.appointment-portal-features {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-bottom: var(--space-4);
+}
+
+.appointment-portal-feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--c-text);
+}
+
+.appointment-portal-feature svg {
+  color: var(--c-accent);
+  flex-shrink: 0;
+}
+
+.appointment-portal-preview {
+  background: var(--c-surface-alt);
+  border: 1.5px dashed var(--c-border-strong);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: var(--space-4);
+}
+
+.appointment-preview-label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--c-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 6px;
+}
+
+.appointment-preview-tags {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.appt-pill {
+  font-size: 11.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border);
+  color: var(--c-text);
+}
+
+.appointment-portal-action {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.appointment-book-btn {
+  width: 100%;
+  padding: 13px 20px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.appointment-portal-note {
+  margin: 0;
+  font-size: 12px;
+  color: var(--c-muted);
+  text-align: center;
+}
+
+@media (max-width: 860px) {
+  .login-layout-container {
+    grid-template-columns: 1fr;
+    max-width: 460px;
+  }
+}
+
 
 .login-brand {
   display: flex;

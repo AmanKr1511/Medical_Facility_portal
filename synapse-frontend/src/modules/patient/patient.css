@@ -131,3 +131,319 @@
     flex-wrap: wrap;
   }
 }
+
+/* ----- Profile ----- */
+.patient-profile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  max-width: 800px;
+}
+
+.profile-header {
+  margin-bottom: var(--space-2);
+}
+
+.profile-alert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-weight: 500;
+}
+.profile-alert--success {
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+.profile-alert--error {
+  background: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+  margin-bottom: var(--space-4);
+}
+
+.profile-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 1.5px solid var(--c-border);
+}
+.profile-hero__meta {
+  flex: 1;
+}
+.profile-hero__name {
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 6px 0;
+}
+.profile-hero__tags {
+  display: flex;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.profile-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--c-muted);
+}
+.profile-tag--accent {
+  background: var(--c-accent-soft);
+  color: var(--c-accent);
+  border-color: transparent;
+}
+
+.profile-details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin: 0;
+}
+.profile-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.profile-item__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--c-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.profile-item__value {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--c-text);
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+.profile-grid--full {
+  grid-column: 1 / -1;
+}
+
+.profile-select {
+  cursor: pointer;
+}
+
+.profile-form__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
+  border-top: 1px solid var(--c-border);
+}
+
+.profile-security-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+.security-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+.security-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-sm);
+  background: var(--c-surface-alt);
+  color: var(--c-primary);
+  border: 1.5px solid var(--c-border);
+}
+.security-title {
+  margin: 0 0 4px;
+  font-size: 16px;
+  font-weight: 700;
+}
+.security-desc {
+  margin: 0;
+  font-size: 14px;
+  color: var(--c-muted);
+}
+
+/* Password Modal */
+.password-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.password-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.password-input-wrap .input {
+  padding-right: 42px;
+}
+.password-toggle-btn {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  color: var(--c-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+}
+.password-toggle-btn:hover {
+  color: var(--c-text);
+}
+.password-form__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+.password-success-view {
+  text-align: center;
+  padding: var(--space-4) 0;
+}
+.password-success-icon {
+  color: #10b981;
+  margin-bottom: var(--space-3);
+}
+
+/* OPD Slip modal styling */
+.opd-slip {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.opd-slip__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--space-3);
+  border-bottom: 2px solid var(--c-primary);
+}
+.opd-slip__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 700;
+  color: var(--c-primary);
+}
+.opd-slip__badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 8px;
+  background: var(--c-surface-alt);
+  border: 1px solid var(--c-border);
+  border-radius: var(--radius-sm);
+}
+.opd-slip__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  background: var(--c-surface-alt);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-border);
+}
+.opd-slip__section-title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--c-primary);
+  letter-spacing: 0.05em;
+}
+.opd-slip__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
+  font-size: 14px;
+}
+.opd-slip__grid--full {
+  grid-column: 1 / -1;
+}
+.opd-label {
+  font-weight: 600;
+  color: var(--c-muted);
+}
+.opd-slip__med-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+.opd-slip__med-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 14px;
+  font-weight: 500;
+}
+.opd-slip__med-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--c-accent);
+}
+.opd-slip__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: 1px dashed var(--c-border);
+}
+.opd-slip__disclaimer {
+  margin: 0;
+  font-size: 11px;
+  color: var(--c-muted);
+}
+.opd-slip__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+}
+
+@media (max-width: 600px) {
+  .profile-details-grid,
+  .profile-grid,
+  .opd-slip__grid {
+    grid-template-columns: 1fr;
+  }
+  .profile-hero {
+    flex-direction: column;
+    text-align: center;
+  }
+  .profile-hero__tags {
+    justify-content: center;
+  }
+  .profile-security-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+

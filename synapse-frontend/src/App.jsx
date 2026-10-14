@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute, homePathForRole, useAuth } from './core/auth';
 import RoleLayout from './core/layout/RoleLayout';
-import { loginRoutes, modules } from './modules';
+import { appointmentRoutes, loginRoutes, modules } from './modules';
 
 /**
  * Routing is generated from the module registry (src/modules/index.js).
@@ -20,6 +20,11 @@ export default function App() {
       {loginRoutes.map((r) => (
         <Route key={r.path} {...r} />
       ))}
+
+      {appointmentRoutes.map((r) => (
+        <Route key={r.path} {...r} />
+      ))}
+
 
       {modules.map((m) => (
         <Route

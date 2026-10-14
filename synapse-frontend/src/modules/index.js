@@ -13,10 +13,12 @@
  *
  * Login pages live in src/modules/auth and export `loginRoutes` the same way.
  */
+import { appointmentRoutes } from './appointment';
 import { loginRoutes } from './auth';
 import doctorModule from './doctor';
 import patientModule from './patient';
 import pharmacistModule from './pharmacist';
 
 export const modules = [patientModule, doctorModule, pharmacistModule];
-export { loginRoutes };
+export { appointmentRoutes, loginRoutes };
+
