@@ -1,0 +1,18 @@
+# Local Python & Virtual Environments
+.venv
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local IDE & Type-Checker Configs (Machine-specific Python 3.14 paths)
+.vscode/
+pyrightconfig.json
+pyrefly.toml
+
+# Local Secrets & SQLite Dev Database
+.env
+db.sqlite3
+db.sqlite3-journal
+
+#Special files
+project_understanding.md
