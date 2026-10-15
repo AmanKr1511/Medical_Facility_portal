@@ -17,5 +17,10 @@ pyrefly.toml
 db.sqlite3
 db.sqlite3-journal
 
-#Special files
+# Backups
+backups/*.sql.gz
+*.sql.gz
+*.sql
+
+# Special files
 project_understanding.md

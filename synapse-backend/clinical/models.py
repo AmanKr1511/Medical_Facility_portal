@@ -86,6 +86,7 @@ class Appointment(models.Model):
         default=AppointmentStatus.BOOKED,
     )
     is_emergency = models.BooleanField(default=False)
+    reminder_sent = models.BooleanField(default=False)
     reason = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

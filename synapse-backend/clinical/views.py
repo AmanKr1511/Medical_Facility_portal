@@ -124,6 +124,13 @@ class PublicAppointmentBookView(APIView):
                 doctor_notes=f"Allergies: {data.get('allergies', 'None')}\nPast Illness: {data.get('past_illness', 'None')}",
             )
 
+            # Trigger async booking confirmation email
+            try:
+                from .tasks import send_appointment_confirmation_email
+                send_appointment_confirmation_email.delay(appointment.id)
+            except Exception:
+                pass
+
         return Response(
             {
                 "success": True,
@@ -147,7 +154,12 @@ class AppointmentBookView(generics.CreateAPIView):
     permission_classes = [IsStudent]
 
     def perform_create(self, serializer):
-        serializer.save()
+        appointment = serializer.save()
+        try:
+            from .tasks import send_appointment_confirmation_email
+            send_appointment_confirmation_email.delay(appointment.id)
+        except Exception:
+            pass
 
 
 

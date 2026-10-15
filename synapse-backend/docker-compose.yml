@@ -1,7 +1,8 @@
 services:
-  db:
+  # 1. PostgreSQL 16 Database
+  synapse-postgres:
     image: postgres:16-alpine
-    container_name: synapse_postgres
+    container_name: synapse-postgres
     restart: unless-stopped
     environment:
       POSTGRES_DB: synapse_db
@@ -17,9 +18,10 @@ services:
       timeout: 5s
       retries: 5
 
-  redis:
+  # 2. Redis Message Broker & Cache
+  synapse-redis:
     image: redis:7-alpine
-    container_name: synapse_redis
+    container_name: synapse-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
@@ -31,58 +33,106 @@ services:
       timeout: 5s
       retries: 5
 
-  web:
-    build: .
-    container_name: synapse_backend
+  # 3. Django Web API Backend
+  synapse-django:
+    build:
+      context: ./synapse-backend
+      dockerfile: Dockerfile
+    container_name: synapse-django
     restart: unless-stopped
     command: >
-      sh -c "python manage.py makemigrations accounts clinical pharmacy &&
-             python manage.py migrate &&
+      sh -c "python manage.py migrate &&
              python manage.py seed_data &&
              python manage.py runserver 0.0.0.0:8000"
     volumes:
-      - .:/app
+      - ./synapse-backend:/app
+      - ./synapse-backend/backups:/app/backups
     ports:
       - "8000:8000"
     environment:
-      - SECRET_KEY=synapse-insecure-intranet-key-change-prod
+      - SECRET_KEY=synapse-django-dev-secret-key-iitrpr-2026-safe-for-local
       - DEBUG=True
       - DB_ENGINE=postgresql
       - DB_NAME=synapse_db
       - DB_USER=synapse_user
       - DB_PASSWORD=synapse_pass
-      - DB_HOST=db
+      - DB_HOST=synapse-postgres
       - DB_PORT=5432
-      - REDIS_URL=redis://redis:6379/0
-      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173
+      - REDIS_URL=redis://synapse-redis:6379/0
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://localhost
     depends_on:
-      db:
+      synapse-postgres:
         condition: service_healthy
-      redis:
+      synapse-redis:
         condition: service_healthy
 
-  celery_worker:
-    build: .
-    container_name: synapse_celery
+  # 4. Celery Worker (Appointment Reminders & Confirmation Emails)
+  synapse-celery-worker:
+    build:
+      context: ./synapse-backend
+      dockerfile: Dockerfile
+    container_name: synapse-celery-worker
     restart: unless-stopped
     command: celery -A config worker --loglevel=info
     volumes:
-      - .:/app
+      - ./synapse-backend:/app
+      - ./synapse-backend/backups:/app/backups
     environment:
-      - SECRET_KEY=synapse-insecure-intranet-key-change-prod
+      - SECRET_KEY=synapse-django-dev-secret-key-iitrpr-2026-safe-for-local
       - DEBUG=True
       - DB_ENGINE=postgresql
       - DB_NAME=synapse_db
       - DB_USER=synapse_user
       - DB_PASSWORD=synapse_pass
-      - DB_HOST=db
+      - DB_HOST=synapse-postgres
       - DB_PORT=5432
-      - REDIS_URL=redis://redis:6379/0
+      - REDIS_URL=redis://synapse-redis:6379/0
     depends_on:
-      db:
+      synapse-postgres:
         condition: service_healthy
-      redis:
+      synapse-redis:
         condition: service_healthy
+
+  # 5. Celery Beat Scheduler (5-min Reminders & 11:00 PM Nightly pg_dump Backup)
+  synapse-celery-beat:
+    build:
+      context: ./synapse-backend
+      dockerfile: Dockerfile
+    container_name: synapse-celery-beat
+    restart: unless-stopped
+    command: celery -A config beat --loglevel=info
+    volumes:
+      - ./synapse-backend:/app
+      - ./synapse-backend/backups:/app/backups
+    environment:
+      - SECRET_KEY=synapse-django-dev-secret-key-iitrpr-2026-safe-for-local
+      - DEBUG=True
+      - DB_ENGINE=postgresql
+      - DB_NAME=synapse_db
+      - DB_USER=synapse_user
+      - DB_PASSWORD=synapse_pass
+      - DB_HOST=synapse-postgres
+      - DB_PORT=5432
+      - REDIS_URL=redis://synapse-redis:6379/0
+    depends_on:
+      synapse-postgres:
+        condition: service_healthy
+      synapse-redis:
+        condition: service_healthy
+
+  # 6. React Vite Production Frontend (Nginx SPA + Reverse Proxy)
+  synapse-frontend:
+    build:
+      context: ./synapse-frontend
+      dockerfile: Dockerfile
+    container_name: synapse-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+      - "8080:80"
+    depends_on:
+      synapse-django:
+        condition: service_started
 
 volumes:
   postgres_data:
