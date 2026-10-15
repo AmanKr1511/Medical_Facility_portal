@@ -176,6 +176,7 @@ CELERY_BROKER_URL = config("REDIS_URL", default="redis://synapse-redis:6379/0")
 CELERY_RESULT_BACKEND = config("REDIS_URL", default="redis://synapse-redis:6379/0")
 CELERY_TIMEZONE = "Asia/Kolkata"
 CELERY_TASK_TRACK_STARTED = True
+CELERY_BEAT_SCHEDULE_FILENAME = "/tmp/celerybeat-schedule"
 
 CELERY_BEAT_SCHEDULE = {
     # 5-Minute Appointment Reminders for upcoming slots / next 3 tokens

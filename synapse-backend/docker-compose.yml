@@ -100,7 +100,7 @@ services:
       dockerfile: Dockerfile
     container_name: synapse-celery-beat
     restart: unless-stopped
-    command: celery -A config beat --loglevel=info
+    command: celery -A config beat -s /tmp/celerybeat-schedule --loglevel=info
     volumes:
       - ./synapse-backend:/app
       - ./synapse-backend/backups:/app/backups
