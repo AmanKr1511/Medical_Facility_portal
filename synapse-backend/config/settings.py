@@ -90,7 +90,7 @@ else:
             "NAME": config("DB_NAME", default="synapse_db"),
             "USER": config("DB_USER", default="synapse_user"),
             "PASSWORD": config("DB_PASSWORD", default="synapse_pass"),
-            "HOST": config("DB_HOST", default="localhost"),
+            "HOST": config("DB_HOST", default="synapse-postgres"),
             "PORT": config("DB_PORT", default="5432"),
         }
     }
@@ -170,7 +170,32 @@ SIMPLE_JWT = {
 # ---------------------------------------------------------------------------
 # Celery / Redis
 # ---------------------------------------------------------------------------
-CELERY_BROKER_URL = config("REDIS_URL", default="redis://localhost:6379/0")
-CELERY_RESULT_BACKEND = config("REDIS_URL", default="redis://localhost:6379/0")
+from celery.schedules import crontab
+
+CELERY_BROKER_URL = config("REDIS_URL", default="redis://synapse-redis:6379/0")
+CELERY_RESULT_BACKEND = config("REDIS_URL", default="redis://synapse-redis:6379/0")
 CELERY_TIMEZONE = "Asia/Kolkata"
 CELERY_TASK_TRACK_STARTED = True
+
+CELERY_BEAT_SCHEDULE = {
+    # 5-Minute Appointment Reminders for upcoming slots / next 3 tokens
+    "send-upcoming-appointment-reminders-every-5-mins": {
+        "task": "clinical.tasks.send_upcoming_appointment_reminders",
+        "schedule": crontab(minute="*/5"),
+    },
+    # 11:00 PM Nightly Compressed pg_dump Backup (Asia/Kolkata)
+    "nightly-database-backup-11pm": {
+        "task": "clinical.tasks.nightly_database_backup",
+        "schedule": crontab(hour=23, minute=0),
+    },
+}
+
+# ---------------------------------------------------------------------------
+# Email Configuration (Console backend for Docker/dev logging, customizable)
+# ---------------------------------------------------------------------------
+EMAIL_BACKEND = config(
+    "EMAIL_BACKEND",
+    default="django.core.mail.backends.console.EmailBackend",
+)
+DEFAULT_FROM_EMAIL = config("DEFAULT_FROM_EMAIL", default="synapse-noreply@iitrpr.ac.in")
+

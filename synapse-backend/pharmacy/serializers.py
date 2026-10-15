@@ -26,13 +26,14 @@ class InventoryBatchSerializer(serializers.ModelSerializer):
 class QueueMedicineSerializer(serializers.ModelSerializer):
     """Medicine line item as returned in the pharmacist queue."""
     id = serializers.IntegerField(source="pk")
+    medicine_id = serializers.IntegerField(source="medicine.id", read_only=True)
     name = serializers.CharField(source="medicine.name")
     strength = serializers.CharField(source="medicine.strength")
 
     class Meta:
         model = PrescriptionMedicine
         fields = [
-            "id", "name", "strength",
+            "id", "medicine_id", "name", "strength",
             "dosage_frequency", "duration_days",
             "prescribed_quantity", "dispensed_quantity",
         ]
