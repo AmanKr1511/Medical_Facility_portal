@@ -17,10 +17,15 @@ pyrefly.toml
 db.sqlite3
 db.sqlite3-journal
 
-# Backups
+# Backups & Database Dumps
 backups/*.sql.gz
 *.sql.gz
 *.sql
+
+# Celery Beat runtime schedule database
+celerybeat-schedule
+celerybeat-schedule.*
+*.db
 
 # Special files
 project_understanding.md
