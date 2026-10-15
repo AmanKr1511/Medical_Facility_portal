@@ -29,3 +29,7 @@ export function clearSession() {
 export function getAuthToken() {
   return loadSession()?.token ?? null;
 }
+
+export function getRefreshToken() {
+  return loadSession()?.refreshToken ?? null;
+}

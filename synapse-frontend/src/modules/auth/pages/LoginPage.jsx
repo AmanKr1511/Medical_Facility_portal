@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import { api } from '../../../core/api/client';
 import { ROLES, homePathForRole, useAuth } from '../../../core/auth';
 import { Button, Icon, LogoMark } from '../../../core/ui';
 import '../login.css';
@@ -9,7 +10,7 @@ const ROLE_OPTIONS = [
     role: ROLES.PATIENT,
     label: 'Patient',
     idLabel: 'Patient ID / Roll Number',
-    placeholder: 'e.g. p-101',
+    placeholder: 'e.g. p-101 or 2026AIM1007',
     demoId: 'p-101',
     demoName: 'Aarav Sharma',
     icon: 'user',
@@ -18,7 +19,7 @@ const ROLE_OPTIONS = [
     role: ROLES.DOCTOR,
     label: 'Doctor',
     idLabel: 'Doctor ID / License Number',
-    placeholder: 'e.g. doc-201',
+    placeholder: 'e.g. doc-201 or doctor@iitrpr.ac.in',
     demoId: 'doc-201',
     demoName: 'Dr. Doom',
     icon: 'stethoscope',
@@ -27,18 +28,12 @@ const ROLE_OPTIONS = [
     role: ROLES.PHARMACIST,
     label: 'Pharmacist',
     idLabel: 'Pharmacist ID',
-    placeholder: 'e.g. ph-301',
+    placeholder: 'e.g. ph-301 or pharmacist@iitrpr.ac.in',
     demoId: 'ph-301',
     demoName: 'Rohan Verma',
     icon: 'pill',
   },
 ];
-
-const KNOWN_USERS = {
-  'p-101': { name: 'Aarav Sharma', role: ROLES.PATIENT },
-  'doc-201': { name: 'Dr. Doom', role: ROLES.DOCTOR },
-  'ph-301': { name: 'Rohan Verma', role: ROLES.PHARMACIST },
-};
 
 export default function LoginPage() {
   const { login, isAuthenticated, user } = useAuth();
@@ -49,6 +44,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (isAuthenticated && user?.role) {
     return <Navigate to={homePathForRole(user.role)} replace />;
@@ -69,12 +65,12 @@ export default function LoginPage() {
     setErrorMessage('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const cleanId = userId.trim();
 
     if (!cleanId) {
-      setErrorMessage('Please enter your user ID.');
+      setErrorMessage('Please enter your user ID or email.');
       return;
     }
 
@@ -83,23 +79,28 @@ export default function LoginPage() {
       return;
     }
 
-    // Determine user display name
-    const known = KNOWN_USERS[cleanId];
-    const displayName =
-      known && known.role === selectedRole
-        ? known.name
-        : `${activeConfig.label} (${cleanId})`;
+    setIsSubmitting(true);
+    setErrorMessage('');
 
-    login({
-      user: {
-        id: cleanId,
-        name: displayName,
-        role: selectedRole,
-      },
-      token: `auth-token-${selectedRole}-${cleanId}`,
-    });
+    try {
+      const data = await api.post('/auth/login/', {
+        email: cleanId,
+        password,
+      });
 
-    navigate(homePathForRole(selectedRole), { replace: true });
+      const loggedInUser = data.user;
+      login({
+        user: loggedInUser,
+        token: data.access,
+        refreshToken: data.refresh,
+      });
+
+      navigate(homePathForRole(loggedInUser.role), { replace: true });
+    } catch (err) {
+      setErrorMessage(err.message || 'Invalid credentials. Please verify your ID and password.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -205,8 +206,8 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button type="submit" className="login-submit-btn">
-              Sign In as {activeConfig.label}
+            <Button type="submit" className="login-submit-btn" disabled={isSubmitting}>
+              {isSubmitting ? 'Signing In...' : `Sign In as ${activeConfig.label}`}
             </Button>
           </form>
 

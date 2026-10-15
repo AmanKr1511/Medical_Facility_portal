@@ -25,17 +25,42 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     @classmethod
     def get_token(cls, user):
         token = super().get_token(user)
-        token["role"] = getattr(user, "role", "student")
+        raw_role = getattr(user, "role", "student")
+        role = "patient" if raw_role == "student" else raw_role
+        token["role"] = role
         token["name"] = getattr(user, "display_name", "")
         return token
 
     def validate(self, attrs):
+        # Allow either 'email' or 'username' in request payload
+        raw_identifier = (attrs.get(self.username_field) or attrs.get("username") or "").strip()
+        demo_aliases = {
+            "p-101": "student@iitrpr.ac.in",
+            "doc-201": "doctor@iitrpr.ac.in",
+            "ph-301": "pharmacist@iitrpr.ac.in",
+        }
+
+        if raw_identifier in demo_aliases:
+            attrs[self.username_field] = demo_aliases[raw_identifier]
+        elif raw_identifier and "@" not in raw_identifier:
+            # Check if it matches a student roll number
+            student = StudentProfile.objects.filter(roll_no__iexact=raw_identifier).first()
+            if student:
+                attrs[self.username_field] = student.user.email
+            else:
+                attrs[self.username_field] = raw_identifier
+        elif raw_identifier:
+            attrs[self.username_field] = raw_identifier
+
         data: dict[str, Any] = dict(super().validate(attrs))
         user = self.user
+        raw_role = getattr(user, "role", "student")
+        role = "patient" if raw_role == "student" else raw_role
         data["user"] = {
             "id": getattr(user, "id", None),
+            "email": getattr(user, "email", ""),
             "name": getattr(user, "display_name", ""),
-            "role": getattr(user, "role", "student"),
+            "role": role,
         }
         return data
 

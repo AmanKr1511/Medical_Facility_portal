@@ -97,10 +97,11 @@ class MeView(APIView):
 
     def get(self, request):
         user = request.user
+        role = "patient" if user.role == "student" else user.role
         return Response({
             "id": user.id,
             "email": user.email,
-            "role": user.role,
+            "role": role,
             "name": user.display_name,
         })
 

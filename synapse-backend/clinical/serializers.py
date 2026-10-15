@@ -65,17 +65,20 @@ class AppointmentBookSerializer(serializers.ModelSerializer):
 
 
 class AppointmentListSerializer(serializers.ModelSerializer):
-    """Doctor's view of today's queue."""
+    """Doctor's queue and student's appointment list view."""
     patient_name = serializers.CharField(source="student.name")
     roll_no = serializers.CharField(source="student.roll_no")
+    doctor_name = serializers.CharField(source="doctor.name", read_only=True)
+    doctor_specialization = serializers.CharField(source="doctor.specialization", read_only=True)
     patient_category = serializers.SerializerMethodField()
     has_prescription = serializers.SerializerMethodField()
 
     class Meta:
         model = Appointment
         fields = [
-            "id", "token_number", "patient_name", "roll_no",
-            "patient_category", "appointment_date", "appointment_time",
+            "id", "token_number", "doctor_name", "doctor_specialization",
+            "patient_name", "roll_no", "patient_category",
+            "appointment_date", "appointment_time",
             "status", "is_emergency", "reason", "has_prescription",
         ]
 
