@@ -1,6 +1,7 @@
 # Local Python & Virtual Environments
 venv/
 .venv/
+.venv
 node_modules/
 dist/
 __pycache__/
