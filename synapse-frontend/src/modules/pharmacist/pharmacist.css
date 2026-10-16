@@ -112,12 +112,12 @@
 .med-item {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-3);
   padding: 11px 14px;
-  border: 1.5px solid var(--c-border);
+  border: 1px solid var(--c-border);
   border-radius: var(--radius-sm);
   background: var(--c-surface);
-  cursor: pointer;
   user-select: none;
   transition: opacity 0.25s ease, background-color 0.25s ease, border-color 0.25s ease;
 }
@@ -126,25 +126,71 @@
   border-color: var(--c-border-strong);
 }
 
-/* The checkbox when clicked makes the medicine transparent */
-.med-item.is-transparent {
-  opacity: 0.18;
+.med-item.is-given {
+  opacity: 0.55;
+  background: var(--c-success-soft);
+  border-color: #9ad8c8;
+}
+
+.med-item.is-given .med-name {
   text-decoration: line-through;
-  background: transparent;
-  border-color: transparent;
+}
+
+.med-item.is-unavailable {
+  background: var(--c-warning-soft);
+  border-color: #f0c48a;
+}
+
+.med-status-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  flex: none;
+}
+
+.med-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid var(--c-border);
+  border-radius: 100px;
+  background: var(--c-surface);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--c-muted);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.med-status.is-active {
+  background: var(--c-accent-soft);
+  border-color: var(--c-primary);
+  color: var(--c-primary-hover);
+}
+
+.med-status--unavailable.is-active {
+  background: var(--c-warning-soft);
+  border-color: var(--c-warning);
+  color: var(--c-warning);
 }
 
 .med-checkbox {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   cursor: pointer;
   accent-color: var(--c-accent);
+}
+
+.med-status--unavailable .med-checkbox {
+  accent-color: var(--c-warning);
 }
 
 .med-name {
   font-size: 15px;
   font-weight: 500;
   color: var(--c-text);
+  min-width: 0;
 }
 
 .med-modal-footer {
@@ -241,6 +287,13 @@
 @media (max-width: 1000px) {
   .pharma-grid {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .med-item {
+    flex-direction: column;
+    align-items: flex-start;
   }
 }
 

@@ -3,10 +3,34 @@
 .login-page {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(1200px 480px at 10% -10%, rgba(0, 125, 121, 0.16), transparent 55%),
+    radial-gradient(900px 420px at 100% 0%, rgba(0, 93, 93, 0.12), transparent 50%),
+    linear-gradient(180deg, #e8f3f2 0%, #edf2f2 42%, #dceaea 100%);
+}
+
+.login-brand-bar {
+  height: var(--topbar-h);
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 var(--space-5);
+  background: var(--c-topbar);
+  color: var(--c-topbar-text);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.12);
+}
+
+.login-page-body {
+  flex: 1;
+  display: flex;
   align-items: center;
   justify-content: center;
   padding: var(--space-5) var(--space-4);
-  background: linear-gradient(180deg, var(--c-surface-alt) 0%, #e8ebf0 100%);
 }
 
 .login-layout-container {
@@ -21,10 +45,10 @@
 .login-card {
   width: 100%;
   background: var(--c-surface);
-  border: 1.5px solid var(--c-border);
+  border: 1px solid var(--c-border);
   border-radius: var(--radius-lg);
   padding: 36px 32px;
-  box-shadow: 0 10px 30px rgba(22, 28, 39, 0.08);
+  box-shadow: var(--shadow-card);
   display: flex;
   flex-direction: column;
 }
@@ -34,11 +58,23 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  background: var(--c-surface);
-  border: 1.5px solid var(--c-border);
+  background: linear-gradient(180deg, #f3fbfa 0%, var(--c-surface) 38%);
+  border: 1px solid var(--c-border);
   border-radius: var(--radius-lg);
   padding: 36px 32px;
-  box-shadow: 0 10px 30px rgba(22, 28, 39, 0.08);
+  box-shadow: var(--shadow-card);
+  position: relative;
+  overflow: hidden;
+}
+
+.appointment-portal-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--c-primary);
 }
 
 .appointment-portal-badge {
@@ -171,7 +207,7 @@
   gap: 12px;
   font-size: 26px;
   font-weight: 700;
-  color: var(--c-text);
+  color: var(--c-primary-hover);
   margin-bottom: 6px;
 }
 
@@ -283,10 +319,10 @@
   gap: 8px;
   padding: 8px 12px;
   border-radius: var(--radius-sm);
-  background: var(--c-surface-alt);
-  border: 1px solid var(--c-border);
+  background: var(--c-accent-soft);
+  border: 1px solid #b7e0de;
   font-size: 13px;
-  color: var(--c-muted);
+  color: var(--c-primary-hover);
 }
 
 .login-role-indicator strong {

@@ -3,26 +3,27 @@ import { useAsync } from '../../../core/hooks/useAsync';
 import { AsyncView, Button, Modal } from '../../../core/ui';
 import { getQueueMedicines } from '../services/pharmacistService';
 
-/** Pop-up opened from "Give medicine": checkbox list with transparency and Done confirmation. */
+const STATUS_GIVEN = 'given';
+const STATUS_UNAVAILABLE = 'unavailable';
+
+/** Pop-up opened from "Give medicine": Given / Not available per item, then Done. */
 export default function MedicinesModal({ entry, onClose, onGiven }) {
   const medicines = useAsync(() => getQueueMedicines(entry.id), [entry.id]);
-  const [checkedSet, setCheckedSet] = useState(() => new Set());
+  const [statusByName, setStatusByName] = useState(() => ({}));
   const [isDone, setIsDone] = useState(false);
 
-  const toggleMedicine = (name) => {
-    setCheckedSet((prev) => {
-      const next = new Set(prev);
-      if (next.has(name)) {
-        next.delete(name);
+  const setStatus = (name, status) => {
+    setStatusByName((prev) => {
+      const next = { ...prev };
+      if (prev[name] === status) {
+        delete next[name];
       } else {
-        next.add(name);
+        next[name] = status;
       }
 
-      // Check if all medicines in the list are now checkboxed
-      if (medicines.data && next.size === medicines.data.length && medicines.data.length > 0) {
-        setTimeout(() => {
-          setIsDone(true);
-        }, 300);
+      const list = medicines.data;
+      if (list?.length && list.every((med) => next[med])) {
+        setTimeout(() => setIsDone(true), 280);
       }
       return next;
     });
@@ -32,6 +33,10 @@ export default function MedicinesModal({ entry, onClose, onGiven }) {
     onGiven?.(entry.id);
     onClose();
   };
+
+  const givenCount = Object.values(statusByName).filter((s) => s === STATUS_GIVEN).length;
+  const unavailableCount = Object.values(statusByName).filter((s) => s === STATUS_UNAVAILABLE).length;
+  const resolvedCount = givenCount + unavailableCount;
 
   return (
     <Modal title="List of Medicines Given" onClose={onClose}>
@@ -57,7 +62,10 @@ export default function MedicinesModal({ entry, onClose, onGiven }) {
           </div>
           <h3 className="med-done-popup__title">Done</h3>
           <p className="med-done-popup__desc">
-            All desired medicines have been marked as given for <strong>{entry.studentName}</strong>.
+            Medicines have been recorded for <strong>{entry.studentName}</strong>
+            {unavailableCount > 0
+              ? ` (${givenCount} given, ${unavailableCount} not available).`
+              : '.'}
           </p>
           <div className="med-done-popup__actions">
             <Button onClick={handleFinish} className="med-done-popup__btn">
@@ -70,26 +78,41 @@ export default function MedicinesModal({ entry, onClose, onGiven }) {
           {medicines.data?.length ? (
             <div className="med-modal-body">
               <p className="med-modal-hint">
-                Check the medicines as you dispense them. Items become transparent when selected.
+                Mark each medicine as given, or select <strong>Not available</strong> if it cannot be dispensed.
               </p>
               <ul className="med-list">
                 {medicines.data.map((name) => {
-                  const isChecked = checkedSet.has(name);
+                  const status = statusByName[name];
+                  const isGiven = status === STATUS_GIVEN;
+                  const isUnavailable = status === STATUS_UNAVAILABLE;
                   return (
                     <li
                       key={name}
-                      className={`med-item${isChecked ? ' is-transparent' : ''}`}
-                      onClick={() => toggleMedicine(name)}
+                      className={`med-item${isGiven ? ' is-given' : ''}${isUnavailable ? ' is-unavailable' : ''}`}
                     >
-                      <input
-                        type="checkbox"
-                        className="med-checkbox"
-                        checked={isChecked}
-                        onChange={() => toggleMedicine(name)}
-                        onClick={(e) => e.stopPropagation()}
-                        aria-label={`Mark ${name} as given`}
-                      />
                       <span className="med-name">{name}</span>
+                      <div className="med-status-group" role="group" aria-label={`${name} status`}>
+                        <label className={`med-status${isGiven ? ' is-active' : ''}`}>
+                          <input
+                            type="checkbox"
+                            className="med-checkbox"
+                            checked={isGiven}
+                            onChange={() => setStatus(name, STATUS_GIVEN)}
+                            aria-label={`Mark ${name} as given`}
+                          />
+                          Given
+                        </label>
+                        <label className={`med-status med-status--unavailable${isUnavailable ? ' is-active' : ''}`}>
+                          <input
+                            type="checkbox"
+                            className="med-checkbox"
+                            checked={isUnavailable}
+                            onChange={() => setStatus(name, STATUS_UNAVAILABLE)}
+                            aria-label={`Mark ${name} as not available`}
+                          />
+                          Not available
+                        </label>
+                      </div>
                     </li>
                   );
                 })}
@@ -97,10 +120,11 @@ export default function MedicinesModal({ entry, onClose, onGiven }) {
 
               <div className="med-modal-footer">
                 <span className="med-count-indicator">
-                  {checkedSet.size} of {medicines.data.length} medicines checked
+                  {resolvedCount} of {medicines.data.length} marked
+                  {resolvedCount > 0 ? ` · ${givenCount} given, ${unavailableCount} not available` : ''}
                 </span>
                 <Button
-                  disabled={checkedSet.size === 0}
+                  disabled={resolvedCount === 0}
                   onClick={() => setIsDone(true)}
                 >
                   Done

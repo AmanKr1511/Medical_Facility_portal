@@ -105,6 +105,11 @@ export default function LoginPage() {
 
   return (
     <div className="login-page">
+      <header className="login-brand-bar">
+        <LogoMark size={22} />
+        <span>SYNapse</span>
+      </header>
+      <div className="login-page-body">
       <div className="login-layout-container">
         {/* Left side: Already present login card */}
         <div className="login-card">
@@ -275,6 +280,7 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
+      </div>
       </div>
     </div>
   );
