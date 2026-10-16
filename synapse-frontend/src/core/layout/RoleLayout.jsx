@@ -8,7 +8,6 @@ export default function RoleLayout({ module }) {
       basePath={module.basePath}
       navItems={module.navItems}
       showLogout={module.showLogout}
-      showNotificationsIcon={module.showNotificationsIcon}
     >
       <Outlet />
     </AppShell>

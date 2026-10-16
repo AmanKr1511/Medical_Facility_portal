@@ -20,11 +20,6 @@ export default function MedicinesModal({ entry, onClose, onGiven }) {
       } else {
         next[name] = status;
       }
-
-      const list = medicines.data;
-      if (list?.length && list.every((med) => next[med])) {
-        setTimeout(() => setIsDone(true), 280);
-      }
       return next;
     });
   };

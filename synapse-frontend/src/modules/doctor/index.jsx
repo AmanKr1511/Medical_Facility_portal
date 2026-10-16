@@ -18,5 +18,4 @@ export default {
     { path: 'consultation', element: <PatientConsultation /> },
   ],
   showLogout: true,
-  showNotificationsIcon: true,
 };

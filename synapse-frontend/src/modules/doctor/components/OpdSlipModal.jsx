@@ -9,10 +9,6 @@ export default function OpdSlipModal({
   onClose,
   onFinalize,
 }) {
-  // Delivery option: 'patient' | 'pharmacy' | 'both'
-  const [deliveryOption, setDeliveryOption] = useState('both');
-  const [isFinalizing, setIsFinalizing] = useState(false);
-
   const complaintsText = (appointment.complaints || [])
     .map((c) => `${c.complaint} (${c.duration})`)
     .join(', ');
@@ -21,14 +17,12 @@ export default function OpdSlipModal({
     ? `C/o – ${complaintsText}.`
     : 'C/o – Routine consultation.';
 
-  const handleDeliverySelect = (option) => {
-    setDeliveryOption(option);
-  };
+  const [isFinalizing, setIsFinalizing] = useState(false);
 
   const handleConfirmFinalize = async () => {
     setIsFinalizing(true);
     await onFinalize({
-      deliveryOption,
+      deliveryOption: 'both',
       patientName: appointment.patientName,
       date: appointment.date,
       time: appointment.time,
@@ -237,7 +231,7 @@ export default function OpdSlipModal({
               </div>
             </div>
 
-            {/* Doctor Signature Block (strictly text only, no signature image, no "Digitally Signed by", no CREDIT) */}
+            {/* Doctor Signature Block (strictly text only, no signature image, no "Digitally Signed by") */}
             <div className="opd-footer">
               <div className="opd-doctor-block">
                 <div className="opd-doc-name">{doctorName}</div>
@@ -251,95 +245,16 @@ export default function OpdSlipModal({
             </div>
           </div>
 
-          {/* Delivery Options Selector Box (Light Blue) */}
-          <div className="opd-delivery-box">
-            <div className="opd-delivery-head">
-              <h3>Send OPD Slip To</h3>
-              <p>Select where to send the generated OPD slip.</p>
-            </div>
-
-            <div className="opd-delivery-options">
-              {/* Option 1: Send to Patient */}
-              <div
-                className={`opd-delivery-card ${
-                  deliveryOption === 'patient' || deliveryOption === 'both' ? 'is-selected' : ''
-                }`}
-                onClick={() =>
-                  handleDeliverySelect(
-                    deliveryOption === 'patient'
-                      ? 'pharmacy'
-                      : deliveryOption === 'both'
-                      ? 'pharmacy'
-                      : 'both'
-                  )
-                }
-              >
-                <div className="opd-delivery-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={deliveryOption === 'patient' || deliveryOption === 'both'}
-                    readOnly
-                  />
-                </div>
-                <div className="opd-delivery-info">
-                  <strong>Send to Patient</strong>
-                  <span>Save in patient's record and make it available to view/print.</span>
-                </div>
-              </div>
-
-              {/* Option 2: Send to Pharmacy */}
-              <div
-                className={`opd-delivery-card ${
-                  deliveryOption === 'pharmacy' || deliveryOption === 'both' ? 'is-selected' : ''
-                }`}
-                onClick={() =>
-                  handleDeliverySelect(
-                    deliveryOption === 'pharmacy'
-                      ? 'patient'
-                      : deliveryOption === 'both'
-                      ? 'patient'
-                      : 'both'
-                  )
-                }
-              >
-                <div className="opd-delivery-checkbox">
-                  <input
-                    type="checkbox"
-                    checked={deliveryOption === 'pharmacy' || deliveryOption === 'both'}
-                    readOnly
-                  />
-                </div>
-                <div className="opd-delivery-info">
-                  <strong>Send to Pharmacy</strong>
-                  <span>Send prescription to pharmacy for medicine dispensing.</span>
-                </div>
-              </div>
-
-              {/* Option 3: Send to Both */}
-              <div
-                className={`opd-delivery-card ${deliveryOption === 'both' ? 'is-selected' : ''}`}
-                onClick={() => handleDeliverySelect('both')}
-              >
-                <div className="opd-delivery-checkbox">
-                  <input type="checkbox" checked={deliveryOption === 'both'} readOnly />
-                </div>
-                <div className="opd-delivery-info">
-                  <strong>Send to Both</strong>
-                  <span>Send to patient and pharmacy.</span>
-                </div>
-              </div>
-            </div>
-
-            <div className="opd-delivery-actions">
-              <Button
-                variant="primary"
-                onClick={handleConfirmFinalize}
-                disabled={isFinalizing}
-                style={{ padding: '10px 24px', fontSize: 15 }}
-              >
-                {isFinalizing ? 'Finalizing...' : 'Generate OPD Slip'}
-              </Button>
-            </div>
+          {/* Generate OPD Slip Button */}
+          <div className="opd-generate-actions">
+            <Button
+              variant="primary"
+              onClick={handleConfirmFinalize}
+              disabled={isFinalizing}
+              style={{ padding: '10px 24px', fontSize: 15 }}
+            >
+              {isFinalizing ? 'Finalizing...' : 'Generate OPD Slip'}
+            </Button>
           </div>
         </div>
       </div>

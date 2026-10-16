@@ -1,5 +1,6 @@
 import { useCallback, useState } from 'react';
-import { Button, Icon, LogoMark, Modal } from '../../../core/ui';
+import { Button, Modal } from '../../../core/ui';
+import IITRoparLogo from '../../doctor/components/IITRoparLogo';
 import { formatDate } from '../../../core/utils/date';
 import { mockPatientProfile, mockVisits } from '../services/mock';
 
@@ -10,84 +11,144 @@ export function useOpdSlipViewer() {
   const visit = selectedVisitId
     ? mockVisits.find((v) => v.id === selectedVisitId) || {
         id: selectedVisitId,
-        date: new Date().toISOString().split('T')[0],
+        date: '',
         doctorName: 'Attending Physician',
-        complaint: 'Routine follow-up',
-        medicines: ['Paracetamol 500mg'],
+        opdNumber: '',
+        fatherHusbandName: '-',
+        patientCategory: 'Student',
+        diagnosis: '',
+        complaint: '',
+        medicines: [],
       }
     : null;
 
   const slipViewer = selectedVisitId && visit ? (
-    <Modal title="Digital OPD Slip" onClose={close}>
-      <div className="opd-slip">
-        <div className="opd-slip__header">
-          <div className="opd-slip__brand">
-            <LogoMark size={24} />
-            <span>SYNapse Health Centre</span>
+    <Modal title="Digital OPD Slip" onClose={close} width="920px">
+      <div className="opd-sheet">
+        <div className="opd-inst-header">
+          <div className="opd-logo-cell">
+            <IITRoparLogo size={88} />
           </div>
-          <span className="opd-slip__badge">Slip #{visit.id.toUpperCase()}</span>
-        </div>
-
-        <div className="opd-slip__section">
-          <h4 className="opd-slip__section-title">Patient Particulars</h4>
-          <div className="opd-slip__grid">
-            <div>
-              <span className="opd-label">Name:</span> {mockPatientProfile.name}
-            </div>
-            <div>
-              <span className="opd-label">Patient ID:</span> {mockPatientProfile.id}
-            </div>
-            <div>
-              <span className="opd-label">Age / Gender:</span> {mockPatientProfile.age} yrs / {mockPatientProfile.gender}
-            </div>
-            <div>
-              <span className="opd-label">Contact:</span> {mockPatientProfile.contact}
-            </div>
+          <div className="opd-header-text">
+            <div className="opd-inst-banner">INDIAN INSTITUTE OF TECHNOLOGY ROPAR</div>
+            <div className="opd-inst-address">Medical Center / Rupnagar-140001, Punjab, India</div>
+            <div className="opd-inst-contact">Medical Centre Emergency Contact No. 01881-235193, 90410-53926</div>
           </div>
         </div>
-
-        <div className="opd-slip__section">
-          <h4 className="opd-slip__section-title">Clinical Consultation</h4>
-          <div className="opd-slip__grid">
-            <div>
-              <span className="opd-label">Visit Date:</span> {formatDate(visit.date)}
+        <div className="opd-patient-meta">
+          <div className="opd-meta-row">
+            <div className="opd-meta-item flex-2">
+              <span className="opd-label">Name</span>
+              <span className="opd-value-underline">{mockPatientProfile.name}</span>
             </div>
-            <div>
-              <span className="opd-label">Doctor:</span> {visit.doctorName}
+            <div className="opd-meta-item flex-1">
+              <span className="opd-label">IPD/OPD No.</span>
+              <span className="opd-value-underline">{visit.opdNumber || 'OPD-0001'}</span>
             </div>
-            <div className="opd-slip__grid--full">
-              <span className="opd-label">Chief Complaint:</span> {visit.complaint}
+            <div className="opd-meta-item flex-1">
+              <span className="opd-label">Date</span>
+              <span className="opd-value-underline">{formatDate(visit.date)}</span>
+            </div>
+          </div>
+          <div className="opd-meta-row">
+            <div className="opd-meta-item flex-1">
+              <span className="opd-label">Father's/Husband's Name</span>
+              <span className="opd-value-underline">{visit.fatherHusbandName || '-'}</span>
+            </div>
+          </div>
+          <div className="opd-meta-row">
+            <div className="opd-meta-item flex-1">
+              <span className="opd-label">Age</span>
+              <span className="opd-value-underline">{mockPatientProfile.age}</span>
+            </div>
+            <div className="opd-meta-item flex-1">
+              <span className="opd-label">Gender</span>
+              <span className="opd-value-underline">{mockPatientProfile.gender}</span>
+            </div>
+            <div className="opd-meta-item flex-1">
+              <span className="opd-label">Department</span>
+              <span className="opd-value-underline">{mockPatientProfile.department || '-'}</span>
+            </div>
+            <div className="opd-meta-item flex-1">
+              <span className="opd-label">Entry No.</span>
+              <span className="opd-value-underline">{mockPatientProfile.id}</span>
+            </div>
+          </div>
+          <div className="opd-categories-row">
+            {['Faculty', 'Staff', 'Family', 'Student'].map((cat) => {
+              const isChecked = (visit.patientCategory || 'Student') === cat;
+              return (
+                <label key={cat} className="opd-checkbox-label">
+                  <span>{cat}</span>
+                  <span className={`opd-fake-box ${isChecked ? 'is-checked' : ''}`}>
+                    {isChecked ? '✔' : ''}
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+          <div className="opd-meta-row opd-diagnosis-row">
+            <div className="opd-meta-item flex-1">
+              <span className="opd-label">Diagnosis</span>
+              <span className="opd-value-underline bold">{visit.diagnosis || 'Routine consultation'}</span>
             </div>
           </div>
         </div>
-
-        <div className="opd-slip__section">
-          <h4 className="opd-slip__section-title">Prescribed Medication</h4>
-          <ul className="opd-slip__med-list">
-            {visit.medicines?.map((med, idx) => (
-              <li key={idx} className="opd-slip__med-item">
-                <span className="opd-slip__med-dot" />
-                <span>{med}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="opd-slip__footer">
-          <p className="opd-slip__disclaimer">
-            * This is a computer-generated medical consultation slip from SYNapse Institute Facility Portal.
-          </p>
-          <div className="opd-slip__actions">
-            <Button variant="outline" onClick={() => window.print()}>
-              <Icon name="download" size={16} />
-              <span>Print Slip</span>
-            </Button>
-            <Button onClick={close}>Done</Button>
+        <div className="opd-clinical-table">
+          <div className="opd-col-reports">
+            <div className="opd-col-header">Date/Reports</div>
+            <div className="opd-reports-content">
+              <div className="opd-report-row">
+                <span className="opd-report-date">{formatDate(visit.date)}</span>
+                <span className="opd-report-desc">OPD Consultation – {visit.doctorName}</span>
+              </div>
+              <div className="opd-blank-lines">
+                <div className="opd-line"></div>
+                <div className="opd-line"></div>
+                <div className="opd-line"></div>
+                <div className="opd-line"></div>
+              </div>
+            </div>
+          </div>
+          <div className="opd-col-treatment">
+            <div className="opd-col-header">Notes & Treatment</div>
+            <div className="opd-treatment-content">
+              <p className="opd-complaints-line">C/o – {visit.complaint || 'Routine consultation'}.</p>
+              <div className="opd-adv-section">
+                <strong className="opd-adv-heading">Adv:</strong>
+                <ul className="opd-adv-list">
+                  {visit.medicines?.map((m, idx) => (
+                    <li key={idx}>{m}</li>
+                  ))}
+                  <li>Review if symptoms persist.</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
+        <div className="opd-footer">
+          <div className="opd-doctor-block">
+            <div className="opd-doc-name">Dr. {visit.doctorName.replace(/^Dr\.?\s+/i, '')}</div>
+            <div className="opd-doc-title">Medical Officer</div>
+            <div className="opd-doc-facility">IIT Ropar Medical Centre</div>
+          </div>
+        </div>
+      </div>
+      <div className="opd-slip-actions">
+        <Button
+          variant="outline"
+          disabled
+          onClick={() =>
+            alert('Send on Mail functionality will be implemented via backend.')
+          }
+        >
+          <span>Send on Mail</span>
+        </Button>
+        <Button onClick={close}>Done</Button>
       </div>
     </Modal>
   ) : null;
 
   return { openSlip: setSelectedVisitId, slipViewer };
 }
+

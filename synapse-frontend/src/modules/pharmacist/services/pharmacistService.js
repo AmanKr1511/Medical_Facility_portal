@@ -4,6 +4,7 @@ import {
   mockQueue,
   mockQueueMedicines,
   mockStudentsGivenToday,
+  mockStudentMedicines,
 } from './mock';
 
 function formatTimeDisplay(timeStr) {
@@ -92,5 +93,15 @@ export async function getMedicinesGivenToday() {
     return mockMedicinesGivenToday;
   } catch {
     return mockMedicinesGivenToday;
+  }
+}
+
+/** @returns {Promise<string[]>} list of medicines given to a specific student */
+export async function getStudentMedicines(studentId) {
+  try {
+    // Future: API call to fetch medicines for a student
+    return mockStudentMedicines[studentId] || [];
+  } catch {
+    return mockStudentMedicines[studentId] || [];
   }
 }

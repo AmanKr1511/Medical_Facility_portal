@@ -8,9 +8,8 @@ import './shell.css';
  *
  * navItems:    [{ label, to, icon, end? }]   (paths relative to the module's basePath)
  * showLogout:  adds a Logout entry at the bottom of the sidebar
- * showNotificationsIcon: the round icon left of the user name in the top bar
  */
-export default function AppShell({ basePath, navItems, showLogout = false, showNotificationsIcon = false, children }) {
+export default function AppShell({ basePath, navItems, showLogout = false, children }) {
   const { user, logout } = useAuth();
 
   return (
@@ -21,11 +20,6 @@ export default function AppShell({ basePath, navItems, showLogout = false, showN
           <span>SYNapse</span>
         </div>
         <div className="shell__user">
-          {showNotificationsIcon && (
-            <button type="button" className="shell__icon-btn" aria-label="Notifications">
-              <Icon name="bell" size={18} />
-            </button>
-          )}
           <Avatar name={user?.name} size={36} />
           <span className="shell__user-name">{user?.name}</span>
         </div>
