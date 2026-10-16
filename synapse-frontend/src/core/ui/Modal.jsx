@@ -3,7 +3,7 @@ import { Icon } from './icons';
 import './ui.css';
 
 /** Accessible dialog: Esc / overlay click / X closes; focus moves in and is restored on close. */
-export default function Modal({ title, onClose, children }) {
+export default function Modal({ title, onClose, children, width }) {
   const titleId = useId();
   const closeRef = useRef(null);
 
@@ -28,7 +28,13 @@ export default function Modal({ title, onClose, children }) {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="modal" role="dialog" aria-modal="true" aria-labelledby={titleId}>
+      <div
+        className="modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        style={{ width: width ?? 'min(580px, 100%)' }}
+      >
         <button ref={closeRef} type="button" className="modal__close" onClick={onClose} aria-label="Close">
           <Icon name="close" size={22} />
         </button>

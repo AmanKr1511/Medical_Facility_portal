@@ -31,3 +31,13 @@ export const mockMedicinesGivenToday = [
   { id: 'm6', name: 'Cough syrup', count: 3 },
   { id: 'm7', name: 'Diclofenac gel', count: 2 },
 ];
+
+export const mockStudentMedicines = {
+  g1: ['Paracetamol 500mg', 'Cetirizine 10mg', 'ORS sachet'],
+  g2: ['Ibuprofen 400mg', 'Diclofenac gel'],
+  g3: ['Amoxicillin 500mg', 'Pantoprazole 40mg', 'Paracetamol 500mg'],
+  g4: ['Cough syrup', 'Vitamin C'],
+  g5: ['Paracetamol 500mg', 'Cetirizine 10mg'],
+  g6: ['ORS sachet', 'Oral rehydration salts'],
+  g7: ['Azithromycin 500mg', 'Loperamide 2mg'],
+};

@@ -18,5 +18,4 @@ export default {
     { path: '*', element: <Navigate to="profile" replace /> },
   ],
   showLogout: true,
-  showNotificationsIcon: true,
 };

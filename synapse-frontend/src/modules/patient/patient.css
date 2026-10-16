@@ -428,6 +428,284 @@
   gap: var(--space-3);
 }
 
+/* ----- OPD Slip: Doctor-Matched Format ----- */
+.opd-sheet {
+  background: #ffffff;
+  border: 1.5px solid #111827;
+  border-radius: var(--radius-md);
+  padding: 24px 28px;
+  box-shadow: var(--shadow-sm);
+  font-family: Arial, Helvetica, sans-serif;
+  color: #000000;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.opd-inst-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+  padding-bottom: var(--space-4);
+  border-bottom: 2px solid var(--c-primary);
+}
+
+.opd-logo-cell {
+  flex: none;
+}
+
+.opd-header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.opd-inst-banner {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #ffffff !important;
+  background: #000000 !important;
+  padding: 6px 12px;
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.opd-inst-address {
+  font-size: 12px;
+  color: var(--c-muted);
+}
+
+.opd-inst-contact {
+  font-size: 12px;
+  color: var(--c-muted);
+}
+
+.opd-main-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 800;
+  margin: var(--space-3) 0 var(--space-4);
+  letter-spacing: -0.01em;
+  color: var(--c-text);
+}
+
+.opd-patient-meta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+}
+
+.opd-meta-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.opd-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+
+.flex-1 {
+  grid-column: span 1;
+}
+
+.flex-2 {
+  grid-column: span 2;
+}
+
+.flex-3 {
+  grid-column: span 3;
+}
+
+.opd-label {
+  font-weight: 600;
+  color: var(--c-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 11px;
+}
+
+.opd-value-underline {
+  font-size: 14px;
+  color: var(--c-text);
+  border-bottom: 1px solid #d1d5db;
+  padding-bottom: 2px;
+}
+
+.opd-value-underline.bold {
+  font-weight: 700;
+  border-bottom-color: var(--c-text);
+}
+
+.opd-categories-row {
+  display: flex;
+  gap: var(--space-2);
+  margin: var(--space-1) 0 var(--space-3);
+}
+
+.opd-checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--c-text);
+}
+
+.opd-fake-box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid #374151;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.opd-fake-box.is-checked {
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+  color: #ffffff;
+}
+
+.opd-diagnosis-row {
+  grid-column: 1 / -1;
+  border-top: 1px solid #e5e7eb;
+  padding-top: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.opd-clinical-table {
+  display: grid;
+  grid-template-columns: 28% 72%;
+  gap: var(--space-4);
+  margin-bottom: var(--space-4);
+}
+
+.opd-col-reports,
+.opd-col-treatment {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  box-sizing: border-box;
+}
+
+.opd-col-reports {
+  padding-right: var(--space-2);
+  border-right: 1px solid #e5e7eb;
+}
+
+.opd-col-treatment {
+  padding-left: var(--space-2);
+}
+
+.opd-treatment-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.opd-complaints-line {
+  margin: 0;
+  font-size: 13px;
+  color: var(--c-text);
+  font-style: italic;
+}
+
+.opd-adv-section {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.opd-adv-heading {
+  flex: none;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--c-text);
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+.opd-adv-list {
+  margin: 0;
+  padding: 0;
+  list-style: disc inside;
+  font-size: 13px;
+  color: var(--c-muted);
+  flex: 1;
+}
+
+.opd-adv-list li {
+  margin-bottom: 2px;
+}
+
+.opd-blank-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.opd-line {
+  border-bottom: 1px solid #000000;
+  height: 8px;
+}
+
+.opd-footer {
+  margin-top: var(--space-5);
+  padding-top: var(--space-4);
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.opd-doctor-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.opd-doc-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--c-text);
+}
+
+.opd-doc-title {
+  font-size: 11.5px;
+  color: var(--c-muted);
+}
+
+.opd-doc-facility {
+  font-size: 11px;
+  color: var(--c-muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.opd-slip-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-5);
+}
+
 @media (max-width: 600px) {
   .profile-details-grid,
   .profile-grid,

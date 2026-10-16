@@ -854,6 +854,7 @@
   align-items: center;
   gap: 16px;
   margin-bottom: 12px;
+  width: 100%;
 }
 
 .opd-logo-cell {
@@ -866,14 +867,18 @@
 }
 
 .opd-inst-banner {
-  background: #000000;
-  color: #ffffff;
+  background: #000000 !important;
+  color: #ffffff !important;
   font-size: 15px;
   font-weight: 800;
   padding: 6px 12px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   margin-bottom: 4px;
+  width: 100%;
+  display: inline-block;
+  text-align: center;
+  font-family: Arial, Helvetica, sans-serif;
 }
 
 .opd-inst-address {
@@ -1078,77 +1083,13 @@
   color: #374151;
 }
 
-/* Delivery options box */
-.opd-delivery-box {
-  margin-top: 20px;
-  background: #eff6ff;
-  border: 1.5px solid #bfdbfe;
-  border-radius: var(--radius-md);
-  padding: 18px 20px;
-}
-
-.opd-delivery-head h3 {
-  font-size: 15px;
-  font-weight: 700;
-  color: #1e3a8a;
-}
-
-.opd-delivery-head p {
-  font-size: 13px;
-  color: #3b82f6;
-  margin-top: 2px;
-}
-
-.opd-delivery-options {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin: 14px 0 16px;
-}
-
-.opd-delivery-card {
-  display: flex;
-  gap: 10px;
-  align-items: flex-start;
-  padding: 12px;
-  background: #ffffff;
-  border: 1.5px solid #bfdbfe;
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-
-.opd-delivery-card.is-selected {
-  border-color: #2563eb;
-  background: #f8faff;
-  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
-}
-
-.opd-delivery-checkbox input {
-  cursor: pointer;
-  margin-top: 2px;
-}
-
-.opd-delivery-info {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.opd-delivery-info strong {
-  font-size: 13.5px;
-  color: #111827;
-}
-
-.opd-delivery-info span {
-  font-size: 12px;
-  color: #6b7280;
-  line-height: 1.35;
-}
-
-.opd-delivery-actions {
+/* Generate OPD Slip Button */
+.opd-generate-actions {
   display: flex;
   justify-content: flex-end;
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 1px solid #e5e7eb;
 }
 
 /* --------------------------------------------------------------------------

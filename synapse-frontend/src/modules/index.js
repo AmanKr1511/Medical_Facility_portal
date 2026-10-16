@@ -8,7 +8,6 @@
  *     navItems:    [{ label, to, icon }]                 sidebar entries ('' = module home)
  *     routes:      [{ index: true, element }, { path: 'x', element }]   react-router <Route> props
  *     showLogout?: boolean                               Logout at the bottom of the sidebar
- *     showNotificationsIcon?: boolean                    round icon in the top bar
  *   }
  *
  * Login pages live in src/modules/auth and export `loginRoutes` the same way.
