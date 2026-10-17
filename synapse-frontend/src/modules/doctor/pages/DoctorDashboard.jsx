@@ -35,6 +35,10 @@ export default function DoctorDashboard() {
   };
 
   const handleView = (aptId) => {
+    const target = appointments.find((a) => a.id === aptId);
+    if (target && target.status === 'Waiting') {
+      handleStatusChange(aptId, 'In Progress');
+    }
     navigate(`/doctor/consultation/${aptId}`);
   };
 
@@ -42,6 +46,8 @@ export default function DoctorDashboard() {
     switch (status) {
       case 'Waiting':
         return 'doc-status-badge is-waiting';
+      case 'In Progress':
+        return 'doc-status-badge is-in-progress';
       case 'Reschedule':
         return 'doc-status-badge is-reschedule';
       case 'Completed':
@@ -158,6 +164,7 @@ export default function DoctorDashboard() {
                         aria-label={`Status for ${apt.patientName}`}
                       >
                         <option value="Waiting">Waiting</option>
+                        <option value="In Progress">In Progress</option>
                         <option value="Reschedule">Reschedule</option>
                         <option value="Completed">Completed</option>
                         <option value="Cancelled">Cancelled</option>

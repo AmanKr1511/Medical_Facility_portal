@@ -58,6 +58,10 @@ export default function PatientConsultation() {
   useEffect(() => {
     const apt = getAppointmentById(appointmentId);
     if (apt) {
+      if (apt.status === 'Waiting') {
+        updateAppointmentStatus(apt.id, 'In Progress');
+        apt.status = 'In Progress';
+      }
       setAppointment(apt);
       if (apt.examination) setExamination(apt.examination);
       if (apt.diagnosis) setDiagnosis(apt.diagnosis);
@@ -245,8 +249,16 @@ export default function PatientConsultation() {
           <span>Back to Appointments</span>
         </button>
 
-        <div className="consult-datetime-badge">
-          Date: {appointment.date || '13 Oct 2026'} | Time: {appointment.time || '11:24 AM'}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span
+            className="doc-status-badge is-in-progress"
+            style={{ width: 'auto', padding: '5px 12px', fontSize: '12.5px' }}
+          >
+            ● {appointment.status || 'In Progress'}
+          </span>
+          <div className="consult-datetime-badge">
+            Date: {appointment.date || '13 Oct 2026'} | Time: {appointment.time || '11:24 AM'}
+          </div>
         </div>
       </div>
 

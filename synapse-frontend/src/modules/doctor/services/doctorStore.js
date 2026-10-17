@@ -148,17 +148,19 @@ export function deleteTemplate(id) {
 
 export function getDoctorStats(appointmentsList) {
   const list = appointmentsList ?? getAppointments();
-  // Image 1 displays: Total Appointments: 12, Consulting: 5, Waiting: 3, Completed: 4
   const waitingCount = list.filter((a) => a.status === 'Waiting').length;
+  const inProgressCount = list.filter(
+    (a) => a.status === 'In Progress' || a.status === 'Consulting'
+  ).length;
   const completedCount = list.filter((a) => a.status === 'Completed').length;
   const rescheduleCount = list.filter((a) => a.status === 'Reschedule').length;
   const cancelledCount = list.filter((a) => a.status === 'Cancelled').length;
 
   return {
-    totalAppointments: 12, // Baseline capacity from wireframe, responsive to completion
-    consulting: 5,
+    totalAppointments: list.length || 12,
+    consulting: inProgressCount,
     waiting: waitingCount,
-    completed: completedCount + 3, // Initial mock base + reactive completed
+    completed: completedCount,
     cancelled: cancelledCount,
     reschedule: rescheduleCount,
   };
