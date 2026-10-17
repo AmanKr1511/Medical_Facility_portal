@@ -13,6 +13,17 @@
 .queue-card {
   padding: var(--space-3);
 }
+
+.queue-date-badge {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--c-muted);
+  background: var(--c-surface-alt);
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--c-border-strong);
+  white-space: nowrap;
+}
 .queue {
   list-style: none;
   margin: 0;

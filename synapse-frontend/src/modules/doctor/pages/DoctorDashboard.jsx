@@ -16,11 +16,16 @@ export default function DoctorDashboard() {
     waiting: 3,
     completed: 4,
   });
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
 
   useEffect(() => {
     const list = getAppointments();
     setAppointments(list);
     setStats(getDoctorStats(list));
+
+    // Live clock: update every second
+    const timer = setInterval(() => setCurrentDateTime(new Date()), 1000);
+    return () => clearInterval(timer);
   }, []);
 
   const handleStatusChange = (id, newStatus) => {
@@ -55,7 +60,19 @@ export default function DoctorDashboard() {
         <h1 className="doc-page-title">Doctor Dashboard</h1>
         <div className="doc-date-badge">
           <Icon name="calendar" size={16} />
-          <span>Day, DD MM YYYY</span>
+          <span>
+            {currentDateTime.toLocaleDateString('en-IN', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            })}
+            {' '}
+            • {currentDateTime.toLocaleTimeString('en-IN', {
+              hour: '2-digit',
+              minute: '2-digit',
+            })}
+          </span>
         </div>
       </div>
 

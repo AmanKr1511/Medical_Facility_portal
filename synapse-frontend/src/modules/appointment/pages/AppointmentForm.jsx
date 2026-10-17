@@ -17,9 +17,13 @@ export default function AppointmentForm() {
     time: '10:15 AM',
   };
 
+  // Source of the appointment request: 'consult_now' | 'consult_later' | undefined
+  const consultationSource = location.state?.consultation_source;
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
     age: '',
     gender: 'Male',
     entryNumber: '',
@@ -28,6 +32,7 @@ export default function AppointmentForm() {
     complaints: '',
     pastIllness: '',
     allergies: '',
+    // Optional contact fields
   });
 
   const [errors, setErrors] = useState({});
@@ -54,12 +59,6 @@ export default function AppointmentForm() {
     }
     if (!formData.age || Number(formData.age) <= 0 || Number(formData.age) > 120) {
       errs.age = 'Please enter a valid age between 1 and 120.';
-    }
-    if (!formData.gender) {
-      errs.gender = 'Gender selection is required.';
-    }
-    if (!formData.fatherOrHusbandName.trim()) {
-      errs.fatherOrHusbandName = "Father's or Husband's name is required.";
     }
     if (!formData.complaints.trim()) {
       errs.complaints = 'Please describe the complaints or symptoms.';
@@ -90,10 +89,14 @@ export default function AppointmentForm() {
         complaints: formData.complaints,
         pastIllness: formData.pastIllness,
         allergies: formData.allergies,
+        phone: formData.phone,
+        emergencyContactName: formData.emergencyContactName,
+        emergencyContactPhone: formData.emergencyContactPhone,
         doctorId: doctorInfo.doctorId,
         doctorName: doctorInfo.doctorName,
         appointmentDate: doctorInfo.date,
         appointmentTime: doctorInfo.time,
+        consultationSource: consultationSource || 'consult_later',
       };
 
       const result = await submitAppointment(payload);
@@ -232,6 +235,18 @@ export default function AppointmentForm() {
                     <dt>Allergies:</dt>
                     <dd>{submittedData.data.allergies}</dd>
                   </div>
+                  <div>
+                    <dt>Mobile Phone:</dt>
+                    <dd>{submittedData.data.phone || 'Not provided'}</dd>
+                  </div>
+                  <div>
+                    <dt>Emergency Contact:</dt>
+                    <dd>{submittedData.data.emergencyContactName || 'Not provided'}</dd>
+                  </div>
+                  <div>
+                    <dt>Emergency Phone:</dt>
+                    <dd>{submittedData.data.emergencyContactPhone || 'Not provided'}</dd>
+                  </div>
                 </dl>
               </div>
             </div>
@@ -354,18 +369,32 @@ export default function AppointmentForm() {
                     />
                     {errors.age && <span className="field-err">{errors.age}</span>}
                   </div>
+                  
+                  {/* Phone */}
+                  <div className="field">
+                    <label className="field__label" htmlFor="pat-phone">
+                      Mobile Phone
+                    </label>
+                    <input
+                      id="pat-phone"
+                      type="tel"
+                      className="input"
+                      placeholder="+91 98765 43210 (Optional)"
+                      value={formData.phone}
+                      onChange={handleChange('phone')}
+                    />
+                  </div>
 
                   {/* Gender */}
                   <div className="field">
                     <label className="field__label" htmlFor="pat-gender">
-                      Gender <span className="req">*</span>
+                      Gender
                     </label>
                     <select
                       id="pat-gender"
                       className={`input${errors.gender ? ' is-invalid' : ''}`}
                       value={formData.gender}
                       onChange={handleChange('gender')}
-                      required
                     >
                       <option value="Male">Male</option>
                       <option value="Female">Female</option>
@@ -377,7 +406,7 @@ export default function AppointmentForm() {
                   {/* Father/Husband's name */}
                   <div className="field appt-fields-grid--full">
                     <label className="field__label" htmlFor="pat-guardian">
-                      Father's / Husband's Name <span className="req">*</span>
+                      Father's / Husband's Name
                     </label>
                     <input
                       id="pat-guardian"
@@ -386,7 +415,6 @@ export default function AppointmentForm() {
                       placeholder="e.g. Rajesh Sharma"
                       value={formData.fatherOrHusbandName}
                       onChange={handleChange('fatherOrHusbandName')}
-                      required
                     />
                     {errors.fatherOrHusbandName && (
                       <span className="field-err">{errors.fatherOrHusbandName}</span>
@@ -498,6 +526,7 @@ export default function AppointmentForm() {
                   </div>
                 </div>
               </div>
+
 
               {/* Form Footer Actions */}
               <div className="appt-form-footer">

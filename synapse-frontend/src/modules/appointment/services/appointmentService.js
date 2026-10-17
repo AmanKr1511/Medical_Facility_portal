@@ -117,10 +117,14 @@ export async function submitAppointment(payload) {
     complaints: payload.complaints?.trim() || 'Consultation request',
     past_illness: payload.pastIllness?.trim() || '',
     allergies: payload.allergies?.trim() || '',
+    phone: payload.phone?.trim() || '',
+    emergency_contact_name: payload.emergencyContactName?.trim() || '',
+    emergency_contact_phone: payload.emergencyContactPhone?.trim() || '',
     doctor_id: docId,
     appointment_date: payload.appointmentDate || new Date().toISOString().split('T')[0],
     appointment_time: to24HourTime(payload.appointmentTime),
     is_emergency: false,
+    consultation_source: payload.consultationSource || 'consult_later',
   };
 
   const response = await api.post('/clinical/appointments/public/', backendPayload);

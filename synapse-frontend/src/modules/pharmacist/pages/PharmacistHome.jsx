@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAsync } from '../../../core/hooks/useAsync';
 import { AsyncView, Section } from '../../../core/ui';
 import CurrentQueue from '../components/CurrentQueue';
@@ -9,6 +9,12 @@ export default function PharmacistHome() {
   const queue = useAsync(getCurrentQueue);
   const [selected, setSelected] = useState(null); // queue entry whose medicines modal is open
   const [completedIds, setCompletedIds] = useState(() => new Set());
+  const [currentDateTime, setCurrentDateTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentDateTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleMedicineGiven = (id) => {
     setCompletedIds((prev) => new Set([...prev, id]));
@@ -16,7 +22,27 @@ export default function PharmacistHome() {
 
   return (
     <div className="pharmacist-page">
-      <Section title="Current Queue" className="section--first">
+      <Section
+        title="Current Queue"
+        className="section--first"
+        action={
+          <div className="queue-date-badge">
+            <span>
+              {currentDateTime.toLocaleDateString('en-IN', {
+                weekday: 'long',
+                day: 'numeric',
+                month: 'short',
+                year: 'numeric',
+              })}
+              {' '}
+              • {currentDateTime.toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit',
+              })}
+            </span>
+          </div>
+        }
+      >
         <div className="card queue-card">
           <AsyncView loading={queue.loading} error={queue.error} onRetry={queue.reload}>
             <CurrentQueue
