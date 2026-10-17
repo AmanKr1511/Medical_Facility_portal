@@ -235,10 +235,16 @@
   border-color: #fde68a;
 }
 
-.doc-status-badge.is-reschedule {
+.doc-status-badge.is-in-progress {
   background-color: #dbeafe;
   color: #1e40af;
-  border-color: #bfdbfe;
+  border-color: #93c5fd;
+}
+
+.doc-status-badge.is-reschedule {
+  background-color: #f3e8ff;
+  color: #6b21a8;
+  border-color: #d8b4fe;
 }
 
 .doc-status-badge.is-completed {
