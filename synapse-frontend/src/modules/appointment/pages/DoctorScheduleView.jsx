@@ -130,7 +130,7 @@ export default function DoctorScheduleView() {
                             </span>
                           )}
                         </div>
-                        <p className="appt-doc-card__meta">{doc.qualification}</p>
+                        {/* Specialization/OPD room intentionally hidden per requirement */}
                         <div className="appt-doc-card__footer">
                         </div>
                       </div>
@@ -148,7 +148,6 @@ export default function DoctorScheduleView() {
                     <Avatar name={activeDoctor.avatarText} size={64} />
                     <div>
                       <h3 className="appt-selected-doc__name">{activeDoctor.name}</h3>
-                      <span className="appt-selected-doc__loc">{activeDoctor.cabin}</span>
                     </div>
                   </div>
 

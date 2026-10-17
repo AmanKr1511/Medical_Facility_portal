@@ -3,6 +3,7 @@ import { Navigate, useNavigate } from 'react-router-dom';
 import { api } from '../../../core/api/client';
 import { ROLES, homePathForRole, useAuth } from '../../../core/auth';
 import { Button, Icon, LogoMark } from '../../../core/ui';
+import ConsultationChoicePopup from '../../appointment/pages/ConsultationChoicePopup';
 import '../login.css';
 
 const ROLE_OPTIONS = [
@@ -45,6 +46,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showConsultPopup, setShowConsultPopup] = useState(false);
 
   if (isAuthenticated && user?.role) {
     return <Navigate to={homePathForRole(user.role)} replace />;
@@ -245,10 +247,10 @@ export default function LoginPage() {
             <Icon name="calendarPlus" size={32} />
           </div>
 
-          <h2 className="appointment-portal-title">Book an Appointment</h2>
+          <h2 className="appointment-portal-title">Consultation</h2>
 
           <p className="appointment-portal-subtitle">
-            Need to consult a doctor? Book an outpatient appointment directly without logging in. Open to all students, staff, and campus residents.
+            Need to consult a doctor? Choose an option below to proceed with your medical consultation. Open to all students, staff, and campus residents.
           </p>
 
           <div className="appointment-portal-features">
@@ -270,16 +272,19 @@ export default function LoginPage() {
             <Button
               size="lg"
               className="appointment-book-btn"
-              onClick={() => navigate('/appointment')}
+              onClick={() => setShowConsultPopup(true)}
             >
               <Icon name="calendarPlus" size={20} />
-              <span>Book an Appointment</span>
+              <span>Consult</span>
             </Button>
             <p className="appointment-portal-note">
-              Click to view doctors schedule and proceed to the appointment form.
+              Choose Consult Now or Consult Later to proceed with your appointment.
             </p>
           </div>
         </div>
+{showConsultPopup && (
+          <ConsultationChoicePopup onClose={() => setShowConsultPopup(false)} />
+        )}
       </div>
       </div>
     </div>

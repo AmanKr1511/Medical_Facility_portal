@@ -663,6 +663,159 @@
   margin-top: var(--space-2);
 }
 
+/* ---------- Consultation Choice Popup (Full-Screen) ---------- */
+.consultation-popup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgba(22, 28, 39, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+.consultation-popup-overlay button.consultation-popup__close {
+  position: fixed;
+  top: var(--space-5);
+  right: var(--space-5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: 50%;
+  color: var(--c-muted);
+  cursor: pointer;
+  z-index: 210;
+  transition: all 0.15s;
+}
+
+.consultation-popup-overlay button.consultation-popup__close:hover {
+  background: var(--c-surface-alt);
+  color: var(--c-text);
+}
+
+.consultation-popup {
+  position: relative;
+  width: min(560px, 92vw);
+  max-height: 88vh;
+  overflow-y: auto;
+  background: var(--c-surface);
+  border: 1.5px solid var(--c-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-7) var(--space-6) var(--space-7);
+  box-shadow: var(--shadow-modal);
+  text-align: center;
+  animation: consultationPopupFadeIn 0.25s ease-out;
+}
+
+@keyframes consultationPopupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.consultation-popup__icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--radius-md);
+  background: var(--c-accent-soft);
+  color: var(--c-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto var(--space-4);
+}
+
+.consultation-popup__title {
+  font-size: 30px;
+  font-weight: 800;
+  margin: 0 0 var(--space-2);
+  color: var(--c-text);
+  letter-spacing: -0.01em;
+}
+
+.consultation-popup__subtitle {
+  font-size: 15px;
+  color: var(--c-muted);
+  margin: 0 0 var(--space-6);
+  line-height: 1.5;
+}
+
+.consultation-popup__options {
+  display: flex;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+.consultation-popup__btn {
+  flex: 1;
+  padding: 16px 24px;
+  font-size: 16px;
+  font-weight: 700;
+  min-width: 180px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.consultation-popup__btn-icon {
+  font-size: 20px;
+}
+
+.consultation-popup__btn--now {
+  background: var(--c-primary);
+  border-color: var(--c-primary);
+  color: var(--c-primary-contrast);
+}
+
+.consultation-popup__btn--now:hover:not(:disabled) {
+  background: var(--c-primary-hover);
+  border-color: var(--c-primary-hover);
+}
+
+.consultation-popup__btn--later {
+  background: var(--c-surface);
+  border-color: var(--c-primary);
+  color: var(--c-primary);
+}
+
+.consultation-popup__btn--later:hover:not(:disabled) {
+  background: var(--c-accent-soft);
+  border-color: var(--c-primary-hover);
+  color: var(--c-primary-hover);
+}
+
+.consultation-popup__note {
+  margin: 0;
+  font-size: 13px;
+  color: var(--c-muted);
+  line-height: 1.5;
+}
+
+.consultation-popup__note strong {
+  color: var(--c-text);
+  font-weight: 700;
+}
+
+@media (max-width: 640px) {
+  .consultation-popup__options {
+    flex-direction: column;
+  }
+  .consultation-popup__btn {
+    width: 100%;
+  }
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .appt-schedule-grid {
