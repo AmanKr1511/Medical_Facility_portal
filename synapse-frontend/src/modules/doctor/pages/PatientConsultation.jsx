@@ -43,6 +43,7 @@ export default function PatientConsultation() {
 
   // Medicine quick search / add
   const [medSearchInput, setMedSearchInput] = useState('');
+  const [showMedDropdown, setShowMedDropdown] = useState(false);
   const [testSearchInput, setTestSearchInput] = useState('');
 
   // Modals state
@@ -85,24 +86,60 @@ export default function PatientConsultation() {
   };
 
   // Medicine table management
-  const handleAddMedicine = () => {
-    const query = medSearchInput.trim();
-    const found = AVAILABLE_MEDICINES.find((m) =>
-      m.name.toLowerCase().includes(query.toLowerCase())
-    );
+  const handleAddMedicine = (selectedMed) => {
+    let nameToAdd = '';
+    let strengthToAdd = '500 mg';
+    let instructionsToAdd = 'After food';
+
+    if (selectedMed && typeof selectedMed === 'object' && selectedMed.name) {
+      nameToAdd = selectedMed.name;
+      strengthToAdd = selectedMed.defaultStrength || '500 mg';
+      instructionsToAdd = selectedMed.defaultInstructions || 'After food';
+    } else {
+      const query = (medSearchInput || '').trim();
+      if (!query) return; // Never auto-add when input is empty!
+
+      const found =
+        AVAILABLE_MEDICINES.find((m) => m.name.toLowerCase() === query.toLowerCase()) ||
+        AVAILABLE_MEDICINES.find((m) => m.name.toLowerCase().includes(query.toLowerCase()));
+
+      if (found) {
+        nameToAdd = found.name;
+        strengthToAdd = found.defaultStrength || '500 mg';
+        instructionsToAdd = found.defaultInstructions || 'After food';
+      } else {
+        nameToAdd = query;
+      }
+    }
+
+    if (!nameToAdd.trim()) return;
 
     const newMed = {
       id: `rx-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      name: found ? found.name : query || 'Paracetamol',
-      strength: found ? found.defaultStrength : '500 mg',
+      name: nameToAdd,
+      strength: strengthToAdd,
       dose: '1',
       timesPerDay: '3',
       days: 5,
-      instructions: found ? found.defaultInstructions : 'After food',
+      instructions: instructionsToAdd,
     };
 
     setPrescriptions((prev) => [...prev, newMed]);
     setMedSearchInput('');
+    setShowMedDropdown(false);
+  };
+
+  const handleAddBlankRow = () => {
+    const newMed = {
+      id: `rx-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      name: 'Paracetamol',
+      strength: '500 mg',
+      dose: '1',
+      timesPerDay: '3',
+      days: 5,
+      instructions: 'After food',
+    };
+    setPrescriptions((prev) => [...prev, newMed]);
   };
 
   const handleUpdateMedicine = (index, field, value) => {
@@ -189,6 +226,11 @@ export default function PatientConsultation() {
       state: { notice: `OPD Slip finalized and routed to ${opdPayload.deliveryOption}.` },
     });
   };
+
+  const trimmedMedQuery = medSearchInput.trim().toLowerCase();
+  const matchedMedicines = trimmedMedQuery
+    ? AVAILABLE_MEDICINES.filter((m) => m.name.toLowerCase().includes(trimmedMedQuery))
+    : [];
 
   return (
     <div className="doc-page">
@@ -287,14 +329,25 @@ export default function PatientConsultation() {
                 </tr>
               </thead>
               <tbody>
-                {(appointment.complaints || []).map((c, i) => (
-                  <tr key={i}>
+                {Array.isArray(appointment.complaints) ? (
+                  appointment.complaints.map((c, i) => (
+                    <tr key={i}>
+                      <td>
+                        <strong>{typeof c === 'object' && c ? c.complaint : c}</strong>
+                      </td>
+                      <td style={{ color: 'var(--c-muted)' }}>
+                        {typeof c === 'object' && c ? c.duration : '-'}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
                     <td>
-                      <strong>{c.complaint}</strong>
+                      <strong>{appointment.complaints || 'Routine consultation'}</strong>
                     </td>
-                    <td style={{ color: 'var(--c-muted)' }}>{c.duration}</td>
+                    <td style={{ color: 'var(--c-muted)' }}>-</td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
           </div>
@@ -394,17 +447,83 @@ export default function PatientConsultation() {
               className="input"
               placeholder="Search medicine (name / brand / salt)..."
               value={medSearchInput}
-              onChange={(e) => setMedSearchInput(e.target.value)}
+              onFocus={() => setShowMedDropdown(true)}
+              onChange={(e) => {
+                setMedSearchInput(e.target.value);
+                setShowMedDropdown(true);
+              }}
               onKeyDown={(e) => {
                 if (e.key === 'Enter') {
                   e.preventDefault();
-                  handleAddMedicine();
+                  if (matchedMedicines.length > 0) {
+                    handleAddMedicine(matchedMedicines[0]);
+                  } else {
+                    handleAddMedicine();
+                  }
+                } else if (e.key === 'Escape') {
+                  setShowMedDropdown(false);
                 }
               }}
             />
+
+            {showMedDropdown && medSearchInput.trim() && (
+              <div className="med-autocomplete-dropdown">
+                {matchedMedicines.map((m) => (
+                  <div
+                    key={m.name}
+                    className="med-autocomplete-item"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleAddMedicine(m);
+                    }}
+                  >
+                    <div>
+                      <span className="med-autocomplete-name">{m.name}</span>
+                      <span className="med-autocomplete-meta" style={{ marginLeft: 8 }}>
+                        {m.defaultInstructions}
+                      </span>
+                    </div>
+                    <span className="med-autocomplete-badge">{m.defaultStrength}</span>
+                  </div>
+                ))}
+                {!matchedMedicines.some((m) => m.name.toLowerCase() === medSearchInput.trim().toLowerCase()) && (
+                  <div
+                    className="med-autocomplete-item"
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      handleAddMedicine();
+                    }}
+                  >
+                    <span className="med-autocomplete-name" style={{ color: '#2563eb' }}>
+                      + Add &quot;{medSearchInput.trim()}&quot; as custom medicine
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
-          <Button variant="primary" type="button" onClick={handleAddMedicine}>
+          <Button
+            variant="primary"
+            type="button"
+            disabled={!medSearchInput.trim()}
+            onClick={() => {
+              if (matchedMedicines.length > 0) {
+                handleAddMedicine(matchedMedicines[0]);
+              } else {
+                handleAddMedicine();
+              }
+            }}
+            title={!medSearchInput.trim() ? 'Type medicine name to add' : 'Add medicine'}
+          >
             <Icon name="plus" size={16} /> Add Medicine
+          </Button>
+          <Button
+            variant="outline"
+            type="button"
+            onClick={handleAddBlankRow}
+            title="Add an empty row to customize"
+          >
+            + Blank Row
           </Button>
         </div>
 
@@ -423,7 +542,14 @@ export default function PatientConsultation() {
               </tr>
             </thead>
             <tbody>
-              {prescriptions.map((med, idx) => (
+              {prescriptions.length === 0 ? (
+                <tr>
+                  <td colSpan="8" className="doc-empty-table-cell">
+                    No medicines prescribed yet. Search a medicine above to add, or load from a template.
+                  </td>
+                </tr>
+              ) : (
+                prescriptions.map((med, idx) => (
                 <tr key={med.id || idx}>
                   <td className="doc-sno">{idx + 1}</td>
                   <td>
@@ -513,7 +639,7 @@ export default function PatientConsultation() {
                     </button>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>

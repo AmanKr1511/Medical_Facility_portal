@@ -9,9 +9,13 @@ export default function OpdSlipModal({
   onClose,
   onFinalize,
 }) {
-  const complaintsText = (appointment.complaints || [])
-    .map((c) => `${c.complaint} (${c.duration})`)
-    .join(', ');
+  const complaintsText = Array.isArray(appointment.complaints)
+    ? appointment.complaints
+        .map((c) => (typeof c === 'object' && c ? `${c.complaint} (${c.duration})` : String(c)))
+        .join(', ')
+    : typeof appointment.complaints === 'string'
+    ? appointment.complaints
+    : '';
 
   const complaintsSentence = complaintsText
     ? `C/o – ${complaintsText}.`

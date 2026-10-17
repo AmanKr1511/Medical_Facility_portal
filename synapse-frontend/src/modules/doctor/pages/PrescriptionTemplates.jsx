@@ -32,6 +32,7 @@ export default function PrescriptionTemplates() {
 
   // Medicine quick search / add state
   const [medSearchInput, setMedSearchInput] = useState('');
+  const [showMedDropdown, setShowMedDropdown] = useState(false);
 
   useEffect(() => {
     const list = getTemplates();
@@ -73,23 +74,60 @@ export default function PrescriptionTemplates() {
     setSuccessMessage('');
   };
 
-  const handleAddMedicineRow = () => {
-    const found = AVAILABLE_MEDICINES.find((m) =>
-      m.name.toLowerCase().includes(medSearchInput.toLowerCase().trim())
-    );
+  const handleAddMedicineRow = (selectedMed) => {
+    let nameToAdd = '';
+    let strengthToAdd = '500 mg';
+    let instructionsToAdd = 'After food';
+
+    if (selectedMed && typeof selectedMed === 'object' && selectedMed.name) {
+      nameToAdd = selectedMed.name;
+      strengthToAdd = selectedMed.defaultStrength || '500 mg';
+      instructionsToAdd = selectedMed.defaultInstructions || 'After food';
+    } else {
+      const query = (medSearchInput || '').trim();
+      if (!query) return; // Do not auto-add when input is empty!
+
+      const found =
+        AVAILABLE_MEDICINES.find((m) => m.name.toLowerCase() === query.toLowerCase()) ||
+        AVAILABLE_MEDICINES.find((m) => m.name.toLowerCase().includes(query.toLowerCase()));
+
+      if (found) {
+        nameToAdd = found.name;
+        strengthToAdd = found.defaultStrength || '500 mg';
+        instructionsToAdd = found.defaultInstructions || 'After food';
+      } else {
+        nameToAdd = query;
+      }
+    }
+
+    if (!nameToAdd.trim()) return;
 
     const newMed = {
       id: `med-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-      name: found ? found.name : medSearchInput.trim() || 'Paracetamol',
-      strength: found ? found.defaultStrength : '500 mg',
+      name: nameToAdd,
+      strength: strengthToAdd,
       dose: '1',
       timesPerDay: '3',
       days: 5,
-      instructions: found ? found.defaultInstructions : 'After food',
+      instructions: instructionsToAdd,
     };
 
     setFormMedicines([...formMedicines, newMed]);
     setMedSearchInput('');
+    setShowMedDropdown(false);
+  };
+
+  const handleAddBlankRow = () => {
+    const newMed = {
+      id: `med-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      name: 'Paracetamol',
+      strength: '500 mg',
+      dose: '1',
+      timesPerDay: '3',
+      days: 5,
+      instructions: 'After food',
+    };
+    setFormMedicines([...formMedicines, newMed]);
   };
 
   const handleUpdateMedicineField = (index, field, value) => {
@@ -155,6 +193,11 @@ export default function PrescriptionTemplates() {
       t.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       t.condition.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const trimmedMedQuery = medSearchInput.trim().toLowerCase();
+  const matchedMedicines = trimmedMedQuery
+    ? AVAILABLE_MEDICINES.filter((m) => m.name.toLowerCase().includes(trimmedMedQuery))
+    : [];
 
   return (
     <div className="doc-page">
@@ -315,22 +358,85 @@ export default function PrescriptionTemplates() {
                     className="input"
                     placeholder="Search medicine (name / salt / company)..."
                     value={medSearchInput}
-                    onChange={(e) => setMedSearchInput(e.target.value)}
+                    onFocus={() => setShowMedDropdown(true)}
+                    onChange={(e) => {
+                      setMedSearchInput(e.target.value);
+                      setShowMedDropdown(true);
+                    }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         e.preventDefault();
-                        handleAddMedicineRow();
+                        if (matchedMedicines.length > 0) {
+                          handleAddMedicineRow(matchedMedicines[0]);
+                        } else {
+                          handleAddMedicineRow();
+                        }
+                      } else if (e.key === 'Escape') {
+                        setShowMedDropdown(false);
                       }
                     }}
                   />
+
+                  {showMedDropdown && medSearchInput.trim() && (
+                    <div className="med-autocomplete-dropdown">
+                      {matchedMedicines.map((m) => (
+                        <div
+                          key={m.name}
+                          className="med-autocomplete-item"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleAddMedicineRow(m);
+                          }}
+                        >
+                          <div>
+                            <span className="med-autocomplete-name">{m.name}</span>
+                            <span className="med-autocomplete-meta" style={{ marginLeft: 8 }}>
+                              {m.defaultInstructions}
+                            </span>
+                          </div>
+                          <span className="med-autocomplete-badge">{m.defaultStrength}</span>
+                        </div>
+                      ))}
+                      {!matchedMedicines.some((m) => m.name.toLowerCase() === medSearchInput.trim().toLowerCase()) && (
+                        <div
+                          className="med-autocomplete-item"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleAddMedicineRow();
+                          }}
+                        >
+                          <span className="med-autocomplete-name" style={{ color: '#2563eb' }}>
+                            + Add &quot;{medSearchInput.trim()}&quot; as custom medicine
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <Button
                   variant="primary"
                   type="button"
-                  onClick={handleAddMedicineRow}
+                  disabled={!medSearchInput.trim()}
+                  onClick={() => {
+                    if (matchedMedicines.length > 0) {
+                      handleAddMedicineRow(matchedMedicines[0]);
+                    } else {
+                      handleAddMedicineRow();
+                    }
+                  }}
                   style={{ whiteSpace: 'nowrap' }}
+                  title={!medSearchInput.trim() ? 'Type medicine name to add' : 'Add medicine'}
                 >
                   <Icon name="plus" size={16} /> Add Medicine
+                </Button>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={handleAddBlankRow}
+                  style={{ whiteSpace: 'nowrap' }}
+                  title="Add an empty row to customize"
+                >
+                  + Blank Row
                 </Button>
               </div>
 
@@ -350,7 +456,14 @@ export default function PrescriptionTemplates() {
                     </tr>
                   </thead>
                   <tbody>
-                    {formMedicines.map((med, idx) => (
+                    {formMedicines.length === 0 ? (
+                      <tr>
+                        <td colSpan="8" className="doc-empty-table-cell">
+                          No medicines in this template yet. Search above to add medicines.
+                        </td>
+                      </tr>
+                    ) : (
+                      formMedicines.map((med, idx) => (
                       <tr key={med.id || idx}>
                         <td className="doc-sno">{idx + 1}</td>
                         <td>
@@ -454,7 +567,7 @@ export default function PrescriptionTemplates() {
                           </button>
                         </td>
                       </tr>
-                    ))}
+                    )))}
                   </tbody>
                 </table>
               </div>
