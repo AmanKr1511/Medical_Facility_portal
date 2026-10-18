@@ -1,4 +1,4 @@
-services:
+oservices:
   # 1. PostgreSQL 16 Database
   synapse-postgres:
     image: postgres:16-alpine

@@ -57,6 +57,94 @@ export function updateAppointmentStatus(id, newStatus) {
   return updated;
 }
 
+export function rescheduleCurrentAppointment() {
+  const list = [...getAppointments()];
+  const inProgressIndex = list.findIndex((a) => a.status === 'In Progress');
+  if (inProgressIndex === -1) return list;
+
+  const target = { ...list[inProgressIndex], status: 'Reschedule' };
+  list.splice(inProgressIndex, 1);
+  list.push(target);
+
+  const updated = list.map((item, idx) => ({ ...item, sNo: idx + 1 }));
+  saveAppointments(updated);
+  return updated;
+}
+
+export function rescheduleAllAppointments() {
+  const list = getAppointments();
+  const updated = list.map((a) => {
+    if (a.status !== 'Completed' && a.status !== 'Cancelled') {
+      return { ...a, status: 'Reschedule' };
+    }
+    return a;
+  });
+  const resequenced = updated.map((item, idx) => ({ ...item, sNo: idx + 1 }));
+  saveAppointments(resequenced);
+  return resequenced;
+}
+
+export function createEmergencyAppointment(payload = {}) {
+  const list = getAppointments();
+  const timeStr = new Date().toLocaleTimeString('en-IN', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
+  const dateStr = new Date().toLocaleDateString('en-GB');
+
+  const emergencyApt = {
+    id: `emg-${Date.now()}`,
+    sNo: 1,
+    patientName: payload.patientName || 'Emergency Patient',
+    patientCategory: 'Emergency',
+    detailsSub: `EMERGENCY | ${payload.triage || 'Critical (Red)'} | ${payload.age || '25'}y | ${payload.gender || 'Male'}`,
+    age: payload.age || 25,
+    gender: payload.gender || 'Male',
+    institutionId: `EMG-${Date.now().toString().slice(-4)}`,
+    courseDepartment: 'Emergency Medicine',
+    hostel: 'Emergency Ward',
+    contact: '01881-235193',
+    fatherHusbandName: 'N/A',
+    opdNumber: `EMG-${Math.floor(1000 + Math.random() * 9000)}`,
+    date: dateStr,
+    time: timeStr,
+    status: 'In Progress',
+    allergies: payload.allergies || 'Unknown (Emergency Intake)',
+    currentMedicines: 'None reported',
+    pastIllness: 'N/A',
+    reports: [],
+    complaints: [
+      {
+        complaint: payload.complaint || 'Acute Emergency Presentation',
+        duration: 'Immediate',
+      },
+    ],
+    examination: {
+      temperature: payload.vitals?.temp || '99.2',
+      bp: payload.vitals?.bp || '135/88',
+      pulse: payload.vitals?.pulse || '110',
+      spo2: payload.vitals?.spo2 || '94',
+      oe: 'Acute distress, stabilized with emergency triage protocol',
+      remarks: payload.treatment || 'Immediate intervention administered on arrival',
+    },
+    diagnosis: payload.diagnosis || payload.complaint || 'Acute Emergency Stabilization',
+    prescriptions: payload.prescriptions || [],
+    selectedTemplate: '',
+    selectedTests: payload.tests || ['ECG', 'CBC', 'Blood Glucose Fasting'],
+    notes: payload.treatment
+      ? `Immediate Interventions: ${payload.treatment}`
+      : 'Emergency patient attended immediately under critical triage protocol.',
+    isEmergency: true,
+  };
+
+  const updated = [emergencyApt, ...list].map((item, idx) => ({
+    ...item,
+    sNo: idx + 1,
+  }));
+  saveAppointments(updated);
+  return emergencyApt;
+}
+
 export function updateAppointmentConsultation(id, updates) {
   const list = getAppointments();
   const updated = list.map((a) => (a.id === id ? { ...a, ...updates } : a));
@@ -94,8 +182,12 @@ export function finalizeOpdSlip(appointmentId, opdData, deliveryOption) {
   });
   save(OPD_SLIPS_KEY, slips);
 
-  // 3. If Send to Pharmacy or Send to Both, send prescription to pharmacy queue
-  if (deliveryOption === 'pharmacy' || deliveryOption === 'both') {
+  // 3. If Send to Pharmacist/Pharmacy or Send to Both, send prescription to pharmacy queue
+  if (
+    deliveryOption === 'pharmacy' ||
+    deliveryOption === 'pharmacist' ||
+    deliveryOption === 'both'
+  ) {
     const pharmaQueue = load(PHARMACY_QUEUE_KEY, []);
     pharmaQueue.push({
       id: `ph-q-${Date.now()}`,

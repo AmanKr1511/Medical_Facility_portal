@@ -23,10 +23,10 @@ export default function OpdSlipModal({
 
   const [isFinalizing, setIsFinalizing] = useState(false);
 
-  const handleConfirmFinalize = async () => {
+  const handleConfirmFinalize = async (deliveryOption = 'both') => {
     setIsFinalizing(true);
     await onFinalize({
-      deliveryOption: 'both',
+      deliveryOption,
       patientName: appointment.patientName,
       date: appointment.date,
       time: appointment.time,
@@ -249,15 +249,39 @@ export default function OpdSlipModal({
             </div>
           </div>
 
-          {/* Generate OPD Slip Button */}
+          {/* 3 Action Buttons to send generated OPD slip */}
           <div className="opd-generate-actions">
             <Button
-              variant="primary"
-              onClick={handleConfirmFinalize}
+              variant="outline"
+              type="button"
+              onClick={() => handleConfirmFinalize('pharmacist')}
               disabled={isFinalizing}
-              style={{ padding: '10px 24px', fontSize: 15 }}
+              className="opd-btn-action opd-btn-pharma"
             >
-              {isFinalizing ? 'Finalizing...' : 'Generate OPD Slip'}
+              <Icon name="pill" size={16} />
+              <span>Send to Pharmacist</span>
+            </Button>
+
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => handleConfirmFinalize('patient')}
+              disabled={isFinalizing}
+              className="opd-btn-action opd-btn-patient"
+            >
+              <Icon name="user" size={16} />
+              <span>Send to Patient</span>
+            </Button>
+
+            <Button
+              variant="primary"
+              type="button"
+              onClick={() => handleConfirmFinalize('both')}
+              disabled={isFinalizing}
+              className="opd-btn-action opd-btn-both"
+            >
+              <Icon name="checkCircle" size={16} />
+              <span>Send to Both</span>
             </Button>
           </div>
         </div>

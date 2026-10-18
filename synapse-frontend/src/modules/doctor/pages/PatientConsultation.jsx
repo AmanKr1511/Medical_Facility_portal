@@ -8,8 +8,10 @@ import SaveTemplateModal from '../components/SaveTemplateModal';
 import {
   finalizeOpdSlip,
   getAppointmentById,
+  getAppointments,
   getTemplates,
   updateAppointmentConsultation,
+  updateAppointmentStatus,
 } from '../services/doctorStore';
 import { AVAILABLE_MEDICINES, AVAILABLE_TESTS } from '../services/mock';
 
@@ -226,8 +228,15 @@ export default function PatientConsultation() {
 
     setShowOpdModal(false);
     // 3. Return to Doctor Dashboard
+    const destinationLabel =
+      opdPayload.deliveryOption === 'pharmacist'
+        ? 'pharmacist'
+        : opdPayload.deliveryOption === 'patient'
+        ? 'patient'
+        : 'both pharmacist and patient';
+
     navigate('/doctor', {
-      state: { notice: `OPD Slip finalized and routed to ${opdPayload.deliveryOption}.` },
+      state: { notice: `OPD Slip finalized and sent to ${destinationLabel}.` },
     });
   };
 
