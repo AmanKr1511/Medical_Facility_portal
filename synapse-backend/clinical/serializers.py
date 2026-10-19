@@ -102,10 +102,11 @@ class AppointmentStatusUpdateSerializer(serializers.ModelSerializer):
 
     def validate_status(self, value):
         allowed = [
+            AppointmentStatus.BOOKED,
+            AppointmentStatus.IN_PROGRESS,
             AppointmentStatus.COMPLETED,
             AppointmentStatus.CANCELLED,
             AppointmentStatus.NO_SHOW,
-            AppointmentStatus.BOOKED,
         ]
         if value not in allowed:
             raise serializers.ValidationError(f"Invalid status transition: {value}")

@@ -15,6 +15,7 @@ from accounts.models import DoctorProfile, PharmacistProfile, StudentProfile
 
 class AppointmentStatus(models.TextChoices):
     BOOKED = "BOOKED", "Booked"
+    IN_PROGRESS = "IN_PROGRESS", "In Progress"
     COMPLETED = "COMPLETED", "Completed"
     CANCELLED = "CANCELLED", "Cancelled"
     NO_SHOW = "NO_SHOW", "No Show"
