@@ -22,6 +22,7 @@ export default function DoctorDashboard() {
   });
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [bannerNotice, setBannerNotice] = useState('');
+  const [activeFilter, setActiveFilter] = useState('ALL'); // 'ALL' | 'CONSULTING' | 'WAITING' | 'COMPLETED'
 
   // Emergency Case & Section state
   const [isEmergencyActive, setIsEmergencyActive] = useState(() => {
@@ -64,6 +65,32 @@ export default function DoctorDashboard() {
   // Separate active queue and completed patients
   const activeAppointments = appointments.filter((a) => a.status !== 'Completed');
   const completedAppointments = appointments.filter((a) => a.status === 'Completed');
+
+  // Summary card click filtering logic
+  const handleCardFilterClick = (filterType) => {
+    if (activeFilter === filterType) {
+      setActiveFilter('ALL');
+    } else {
+      setActiveFilter(filterType);
+      if (filterType === 'COMPLETED') {
+        setTimeout(() => {
+          const el = document.getElementById('completed-patients-section');
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }, 50);
+      }
+    }
+  };
+
+  // Filtered active queue appointments based on card click
+  const displayedAppointments = activeAppointments.filter((a) => {
+    if (activeFilter === 'WAITING') {
+      return a.status === 'Waiting';
+    }
+    if (activeFilter === 'CONSULTING') {
+      return a.status === 'In Progress' || a.status === 'Consulting';
+    }
+    return true;
+  });
 
   // Currently in-progress patient
   const inProgressPatient = activeAppointments.find((a) => a.status === 'In Progress');
@@ -231,10 +258,22 @@ export default function DoctorDashboard() {
         </div>
       )}
 
-      {/* Summary KPI Cards Grid */}
+      {/* Summary KPI Cards Grid (Click to filter queue) */}
       <div className="doc-stats-grid">
         {/* Total Appointments */}
-        <div className="doc-stat-card card-total">
+        <div
+          role="button"
+          tabIndex={0}
+          className={`doc-stat-card card-total ${activeFilter === 'ALL' ? 'is-active' : ''}`}
+          onClick={() => handleCardFilterClick('ALL')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleCardFilterClick('ALL');
+            }
+          }}
+          title="Click to view all appointments"
+        >
           <div className="doc-stat-top">
             <span className="doc-stat-icon-wrap icon-blue">
               <Icon name="calendar" size={20} />
@@ -245,7 +284,19 @@ export default function DoctorDashboard() {
         </div>
 
         {/* Consulting */}
-        <div className="doc-stat-card card-consulting">
+        <div
+          role="button"
+          tabIndex={0}
+          className={`doc-stat-card card-consulting ${activeFilter === 'CONSULTING' ? 'is-active' : ''}`}
+          onClick={() => handleCardFilterClick('CONSULTING')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleCardFilterClick('CONSULTING');
+            }
+          }}
+          title="Click to filter Consulting / In Progress patients"
+        >
           <div className="doc-stat-top">
             <span className="doc-stat-icon-wrap icon-green">
               <Icon name="stethoscope" size={20} />
@@ -256,7 +307,19 @@ export default function DoctorDashboard() {
         </div>
 
         {/* Waiting */}
-        <div className="doc-stat-card card-waiting">
+        <div
+          role="button"
+          tabIndex={0}
+          className={`doc-stat-card card-waiting ${activeFilter === 'WAITING' ? 'is-active' : ''}`}
+          onClick={() => handleCardFilterClick('WAITING')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleCardFilterClick('WAITING');
+            }
+          }}
+          title="Click to filter Waiting queue patients"
+        >
           <div className="doc-stat-top">
             <span className="doc-stat-icon-wrap icon-orange">
               <Icon name="hourglass" size={20} />
@@ -267,7 +330,19 @@ export default function DoctorDashboard() {
         </div>
 
         {/* Completed */}
-        <div className="doc-stat-card card-completed">
+        <div
+          role="button"
+          tabIndex={0}
+          className={`doc-stat-card card-completed ${activeFilter === 'COMPLETED' ? 'is-active' : ''}`}
+          onClick={() => handleCardFilterClick('COMPLETED')}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleCardFilterClick('COMPLETED');
+            }
+          }}
+          title="Click to view Completed consultations"
+        >
           <div className="doc-stat-top">
             <span className="doc-stat-icon-wrap icon-purple">
               <Icon name="checkCircle" size={20} />
@@ -488,13 +563,64 @@ export default function DoctorDashboard() {
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <h2 className="doc-table-title">Today's Appointments</h2>
             <span className="doc-count-badge is-active">
-              {activeAppointments.length} Active
+              {activeFilter !== 'ALL' && activeFilter !== 'COMPLETED'
+                ? `${displayedAppointments.length} of ${activeAppointments.length} Active`
+                : `${activeAppointments.length} Active`}
             </span>
           </div>
           <p className="doc-section-sub">
             Active consultation and waiting queue for today's OPD session
           </p>
         </div>
+
+        {/* Active Filter Bar */}
+        {activeFilter !== 'ALL' && (
+          <div className={`doc-filter-bar filter-${activeFilter.toLowerCase()}`}>
+            <div className="doc-filter-bar-left">
+              <span className="doc-filter-indicator-dot" />
+              <span className="doc-filter-text">
+                Filter:{' '}
+                <strong>
+                  {activeFilter === 'WAITING'
+                    ? 'Waiting Patients'
+                    : activeFilter === 'CONSULTING'
+                    ? 'Consulting / In Progress'
+                    : 'Completed Consultations'}
+                </strong>
+              </span>
+              <span className="doc-filter-count">
+                ({activeFilter === 'COMPLETED' ? completedAppointments.length : displayedAppointments.length}{' '}
+                {(activeFilter === 'COMPLETED' ? completedAppointments.length : displayedAppointments.length) === 1
+                  ? 'patient'
+                  : 'patients'})
+              </span>
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              {activeFilter === 'COMPLETED' && (
+                <button
+                  type="button"
+                  className="doc-filter-jump-btn"
+                  onClick={() => {
+                    const el = document.getElementById('completed-patients-section');
+                    if (el) el.scrollIntoView({ behavior: 'smooth' });
+                  }}
+                >
+                  Jump to Completed ↓
+                </button>
+              )}
+              <button
+                type="button"
+                className="doc-filter-clear-btn"
+                onClick={() => setActiveFilter('ALL')}
+                title="Clear filter and view all appointments"
+              >
+                <Icon name="close" size={12} />
+                <span>Clear Filter</span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {activeAppointments.length === 0 ? (
           <div className="doc-empty-state">
@@ -505,6 +631,24 @@ export default function DoctorDashboard() {
             <p className="doc-empty-desc">
               There are no pending patients in the active queue. You can review completed patients below.
             </p>
+          </div>
+        ) : displayedAppointments.length === 0 ? (
+          <div className="doc-empty-state">
+            <div className="doc-empty-icon icon-orange">
+              <Icon name="hourglass" size={32} />
+            </div>
+            <div className="doc-empty-title">
+              No {activeFilter === 'WAITING' ? 'waiting' : 'consulting'} patients
+            </div>
+            <p className="doc-empty-desc">
+              There are currently no patients in the active queue with status "
+              {activeFilter === 'WAITING' ? 'Waiting' : 'In Progress'}".
+            </p>
+            <div style={{ marginTop: 12 }}>
+              <Button variant="outline" size="sm" onClick={() => setActiveFilter('ALL')}>
+                Show All Patients
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="doc-table-wrap">
@@ -518,7 +662,7 @@ export default function DoctorDashboard() {
                 </tr>
               </thead>
               <tbody>
-                {activeAppointments.map((apt, index) => (
+                {displayedAppointments.map((apt, index) => (
                   <tr
                     key={apt.id}
                     className={apt.status === 'In Progress' ? 'doc-row-in-progress' : ''}
@@ -622,7 +766,10 @@ export default function DoctorDashboard() {
       </div>
 
       {/* Separate Section: Completed Patients */}
-      <div className="doc-section-card doc-completed-section">
+      <div
+        id="completed-patients-section"
+        className={`doc-section-card doc-completed-section ${activeFilter === 'COMPLETED' ? 'is-highlighted-section' : ''}`}
+      >
         <div className="doc-table-header doc-section-header-flex">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
