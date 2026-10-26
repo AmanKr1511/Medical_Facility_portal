@@ -81,6 +81,7 @@ class Appointment(models.Model):
     appointment_date = models.DateField(db_index=True)
     appointment_time = models.TimeField()
     token_number = models.PositiveIntegerField(null=True, blank=True, db_index=True)
+    opd_number = models.CharField(null=False, db_index=True)
     status = models.CharField(
         max_length=20,
         choices=AppointmentStatus.choices,
@@ -95,11 +96,11 @@ class Appointment(models.Model):
         db_table = "appointment"
         verbose_name = "Appointment"
         verbose_name_plural = "Appointments"
-        ordering = ["-appointment_date", "is_emergency", "token_number"]
+        ordering = ["-appointment_date", "is_emergency", "token_number", "opd_number"]
 
     def __str__(self):
         return (
-            f"#{self.token_number} {self.student.name} → {self.doctor.name} "
+            f"#{self.token_number}:{self.opd_number} {self.student.name} → {self.doctor.name} "
             f"on {self.appointment_date} [{self.status}]"
         )
 

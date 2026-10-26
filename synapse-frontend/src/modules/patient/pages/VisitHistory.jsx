@@ -3,16 +3,17 @@ import { useAsync } from '../../../core/hooks/useAsync';
 import { AsyncView, Button } from '../../../core/ui';
 import { useOpdSlipViewer } from '../components/OpdSlipViewer';
 import VisitCard from '../components/VisitCard';
-import { getVisits } from '../services/patientService';
+import { getVisits, getPatientProfile } from '../services/patientService';
 
 const EMPTY_FILTERS = { date: '', doctor: '', medicine: '' };
 
 export default function VisitHistory() {
   const [form, setForm] = useState(EMPTY_FILTERS); // what the user is typing
   const [applied, setApplied] = useState(EMPTY_FILTERS); // what the last Search submitted
-  const { openSlip, slipViewer } = useOpdSlipViewer();
 
   const visits = useAsync(() => getVisits(applied), [applied]);
+  const PatientProfile = useAsync(() => getPatientProfile(), []);
+  const { openSlip, slipViewer } = useOpdSlipViewer(visits, PatientProfile);
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 

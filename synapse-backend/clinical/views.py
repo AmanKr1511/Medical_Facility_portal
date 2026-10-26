@@ -109,6 +109,7 @@ class PublicAppointmentBookView(APIView):
                 appointment_date=data["appointment_date"],
                 appointment_time=data["appointment_time"],
                 token_number=token_number,
+                opd_number=opd_number,
                 is_emergency=data.get("is_emergency", False),
                 reason=data["complaints"],
             )
@@ -334,6 +335,7 @@ class PatientVisitHistoryView(generics.ListAPIView):
 
     def get_queryset(self):
         student = self.request.user.student_profile
+        print(student)
         qs = (
             Appointment.objects.filter(
                 student=student,

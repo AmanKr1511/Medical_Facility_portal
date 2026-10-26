@@ -176,6 +176,7 @@ class PatientVisitSerializer(serializers.ModelSerializer):
     """One visit record as returned to the patient."""
     doctor_name = serializers.CharField(source="doctor.name")
     date = serializers.DateField(source="appointment_date")
+    opd_number = serializers.CharField()
     medicines = serializers.SerializerMethodField()
     diagnosis = serializers.SerializerMethodField()
     complaint = serializers.SerializerMethodField()
@@ -184,7 +185,7 @@ class PatientVisitSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = [
-            "id", "date", "doctor_name",
+            "id", "date", "doctor_name", "opd_number",
             "complaint", "diagnosis",
             "medicines", "prescription_status",
         ]
