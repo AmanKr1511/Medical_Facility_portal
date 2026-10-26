@@ -155,6 +155,7 @@ export async function getVisits({ date, doctor, medicine, limit } = {}) {
       id: String(v.id),
       date: v.date,
       doctorName: v.doctor_name ? `Dr. ${v.doctor_name.replace(/^Dr\.?\s+/i, '')}` : 'Consultant Doctor',
+      opd_number: v.opd_number,
       complaint: v.complaint || 'OPD Consultation',
       medicines: (v.medicines || []).map((m) =>
         typeof m === 'string' ? m : `${m.name} ${m.strength || ''}`.trim()

@@ -105,3 +105,29 @@ export async function getStudentMedicines(studentId) {
     return mockStudentMedicines[studentId] || [];
   }
 }
+
+/** @returns {Promise<OPDRecord[]>} OPD history records, filtered by OPD number if provided */
+export async function getOPDHistory(opdNumber) {
+  try {
+    const data = await api.get('/pharmacy/opd-history/');
+    const list = Array.isArray(data) ? data : [];
+
+    // Filter by OPD number if provided
+    const filteredList = opdNumber
+      ? list.filter((item) =>
+          String(item.opdNumber || '').toLowerCase().includes(opdNumber.toLowerCase())
+        )
+      : list;
+
+    return filteredList.length
+      ? filteredList.map((item) => ({
+          opdNumber: item.opdNumber,
+          patientName: item.patientName,
+          doctorName: item.doctorName,
+          visitTime: item.visitTime || '—',
+        }))
+      : mockOPDHistory;
+  } catch {
+    return mockOPDHistory;
+  }
+}
