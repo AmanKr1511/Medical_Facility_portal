@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from accounts.permissions import IsPharmacistOrAdmin
-from clinical.models import Prescription, PrescriptionMedicine
+from clinical.models import Prescription, PrescriptionMedicine, Appointment
 
 from .models import Medicine, MedicineInventory
 from .serializers import (
@@ -22,6 +22,7 @@ from .serializers import (
     InventoryBatchSerializer,
     MedicineSerializer,
     PharmacistQueueSerializer,
+    OPDSerializer
 )
 
 
@@ -187,3 +188,17 @@ class MedicineBatchListView(generics.ListAPIView):
             expiry_date__gte=today,
             quantity__gt=0,
         ).order_by("expiry_date")  # FEFO
+
+class PharmacistOPDHistoryView(generics.ListAPIView):
+    """
+    GET /api/pharmacy/opd-history/
+    """
+    serializer_class = OPDSerializer
+    permission_classes = [IsPharmacistOrAdmin]
+
+    def get_queryset(self):
+        opd_number = self.request.query_params.get("opd_number")
+        qs = Appointment.objects.select_related("student", "doctor", "medical_record").prefetch_related("prescription__medicines")
+        if opd_number:
+            qs = qs.filter(opd_number=opd_number)
+        return qs.order_by("-appointment_date", "-appointment_time")

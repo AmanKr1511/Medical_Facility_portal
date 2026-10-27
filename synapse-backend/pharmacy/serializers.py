@@ -5,7 +5,8 @@ Serializers for the pharmacist-facing queue and dispensation endpoints.
 """
 from rest_framework import serializers
 
-from clinical.models import Prescription, PrescriptionMedicine
+from clinical.models import Prescription, PrescriptionMedicine, Appointment
+from clinical.serializers import VisitMedicineSerializer
 from .models import Medicine, MedicineInventory
 
 
@@ -92,3 +93,44 @@ class DispenseRequestSerializer(serializers.Serializer):
         choices=["CREDIT_STUDENT", "PAID_CASH", "PENDING_CASH"],
     )
     notes = serializers.CharField(required=False, allow_blank=True, default="")
+
+class OPDSerializer(serializers.ModelSerializer):
+    """Serializer for OPD visits"""
+    patient_name = serializers.CharField(source="student.name")
+    doctor_name = serializers.CharField(source="doctor.name")
+    date = serializers.DateField(source="appointment_date")
+    opd_number = serializers.CharField()
+    medicines = serializers.SerializerMethodField()
+    diagnosis = serializers.SerializerMethodField()
+    complaint = serializers.SerializerMethodField()
+    prescription_status = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Appointment
+        fields = [
+            "id", "date", "patient_name", "doctor_name", "opd_number",
+            "complaint", "diagnosis",
+            "medicines", "prescription_status",
+        ]
+
+    def get_medicines(self, obj):
+        if hasattr(obj, "prescription"):
+            return VisitMedicineSerializer(obj.prescription.medicines.all(), many=True).data
+        return []
+
+    def get_diagnosis(self, obj):
+        if hasattr(obj, "medical_record"):
+            return obj.medical_record.diagnosis
+        return ""
+
+    def get_prescription_status(self, obj):
+        if hasattr(obj, "prescription"):
+            return obj.prescription.status
+        return ""
+
+    def get_complaint(self, obj):
+        if hasattr(obj, "medical_record") and obj.medical_record.complaints:
+            return ", ".join(
+                c.get("complaint", "") for c in obj.medical_record.complaints
+            )
+        return obj.reason or ""

@@ -81,7 +81,7 @@ class Appointment(models.Model):
     appointment_date = models.DateField(db_index=True)
     appointment_time = models.TimeField()
     token_number = models.PositiveIntegerField(null=True, blank=True, db_index=True)
-    opd_number = models.CharField(null=False, db_index=True)
+    opd_number = models.CharField(max_length = 100, null=False, db_index=True)
     status = models.CharField(
         max_length=20,
         choices=AppointmentStatus.choices,

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAsync } from '../../../core/hooks/useAsync';
-import { AsyncView, Section, SearchBar } from '../../../core/ui';
+import { AsyncView, SearchBar, Section } from '../../../core/ui';
 import SearchableTable from '../components/SearchableTable';
 import { getOPDHistory } from '../services/pharmacistService';
 
@@ -20,30 +20,37 @@ export default function OPDHistory() {
   return (
     <div className="pharmacist-page">
       <Section title="OPD History" className="section--first">
-        <SearchBar
-          placeholder="Search by OPD Number"
-          onSearch={(value) => {
-            setOPDNumber(value);
-          }}
-        />
         <AsyncView
           loading={opdHistory.loading}
           error={opdHistory.error}
           onRetry={opdHistory.reload}
         >
-          {opdHistory.data?.length ? (
+          {opdHistory.data && opdHistory.data.length > 0 ? (
             <SearchableTable
+              onSearch={(value) => {
+                setOPDNumber(value);
+              }}
               state={opdHistory}
               columns={opdColumns}
               searchKey="opdNumber"
-              searchPlaceholder="OPD Number"
-              emptyMessage="No OPD records match your search."
+              searchPlaceholder="Search by OPD Number"
+              emptyMessage="No OPD records available."
             />
           ) : (
             <div className="state-msg">
-              {opdNumber
-                ? 'No OPD records found for OPD number: ' + opdNumber
-                : 'No OPD records available.'}
+              {opdHistory.error ? (
+                <>
+                  <p>Failed to load OPD history.</p>
+                  <button
+                    onClick={opdHistory.reload}
+                    className="btn btn--outline"
+                  >
+                    Retry
+                  </button>
+                </>
+              ) : (
+                <p>No OPD records available.</p>
+              )}
             </div>
           )}
         </AsyncView>

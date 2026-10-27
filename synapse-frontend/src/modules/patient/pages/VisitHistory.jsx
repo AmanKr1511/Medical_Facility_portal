@@ -13,7 +13,8 @@ export default function VisitHistory() {
 
   const visits = useAsync(() => getVisits(applied), [applied]);
   const PatientProfile = useAsync(() => getPatientProfile(), []);
-  const { openSlip, slipViewer } = useOpdSlipViewer(visits, PatientProfile);
+
+  const { openSlip, slipViewer } = useOpdSlipViewer(visits.data, PatientProfile.data);
 
   const update = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }));
 
