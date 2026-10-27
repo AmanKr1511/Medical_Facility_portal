@@ -108,26 +108,14 @@ export async function getStudentMedicines(studentId) {
 
 /** @returns {Promise<OPDRecord[]>} OPD history records, filtered by OPD number if provided */
 export async function getOPDHistory(opdNumber) {
-  try {
-    const data = await api.get('/pharmacy/opd-history/');
-    const list = Array.isArray(data) ? data : [];
+  const query = opdNumber ? `?opd_number=${encodeURIComponent(opdNumber)}` : '';
+  const data = await api.get(`/pharmacy/opd-history/${query}`);
+  const list = Array.isArray(data) ? data : [];
 
-    // Filter by OPD number if provided
-    const filteredList = opdNumber
-      ? list.filter((item) =>
-          String(item.opdNumber || '').toLowerCase().includes(opdNumber.toLowerCase())
-        )
-      : list;
-
-    return filteredList.length
-      ? filteredList.map((item) => ({
-          opdNumber: item.opdNumber,
-          patientName: item.patientName,
-          doctorName: item.doctorName,
-          visitTime: item.visitTime || '—',
-        }))
-      : mockOPDHistory;
-  } catch {
-    return mockOPDHistory;
-  }
+  return list.map((item) => ({
+    opdNumber: item.opd_number,
+    patientName: item.patient_name,
+    doctorName: item.doctor_name,
+    visitTime: item.date || '—',
+  }));
 }

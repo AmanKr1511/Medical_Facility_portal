@@ -335,7 +335,6 @@ class PatientVisitHistoryView(generics.ListAPIView):
 
     def get_queryset(self):
         student = self.request.user.student_profile
-        print(student)
         qs = (
             Appointment.objects.filter(
                 student=student,

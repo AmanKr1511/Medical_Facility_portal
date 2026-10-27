@@ -42,13 +42,3 @@ export const mockStudentMedicines = {
   g7: ['Azithromycin 500mg', 'Loperamide 2mg'],
 };
 
-/** Mock OPD history records - used when backend is not available */
-export const mockOPDHistory = [
-  { opdNumber: 'OPD-001', patientName: 'Ananya Gupta', doctorName: 'Dr. Smith', visitTime: '09:30 AM' },
-  { opdNumber: 'OPD-002', patientName: 'Vikram Patel', doctorName: 'Dr. Jones', visitTime: '10:15 AM' },
-  { opdNumber: 'OPD-003', patientName: 'Sneha Reddy', doctorName: 'Dr. Brown', visitTime: '11:00 AM' },
-  { opdNumber: 'OPD-004', patientName: 'Rahul Nair', doctorName: 'Dr. White', visitTime: '01:45 PM' },
-  { opdNumber: 'OPD-005', patientName: 'Priya Menon', doctorName: 'Dr. Black', visitTime: '02:30 PM' },
-  { opdNumber: 'OPD-006', patientName: 'Arjun Mehta', doctorName: 'Dr. Green', visitTime: '03:15 PM' },
-  { opdNumber: 'OPD-007', patientName: 'Kavya Krishnan', doctorName: 'Dr. Red', visitTime: '04:00 PM' },
-];
