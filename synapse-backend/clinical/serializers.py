@@ -57,7 +57,11 @@ class AppointmentBookSerializer(serializers.ModelSerializer):
                 appointment_date=validated_data["appointment_date"],
             ).aggregate(max_token=Max("token_number"))["max_token"] or 0
 
-            validated_data["token_number"] = existing_max + 1
+            from django.utils import timezone
+            token = existing_max + 1
+            validated_data["token_number"] = token
+            if not validated_data.get("opd_number"):
+                validated_data["opd_number"] = f"OPD-{timezone.now().strftime('%m%d')}-{token:03d}"
             validated_data["student"] = student
             appointment = super().create(validated_data)
 
@@ -76,7 +80,7 @@ class AppointmentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Appointment
         fields = [
-            "id", "token_number", "doctor_name", "doctor_specialization",
+            "id", "token_number", "opd_number", "doctor_name", "doctor_specialization",
             "patient_name", "roll_no", "patient_category",
             "appointment_date", "appointment_time",
             "status", "is_emergency", "reason", "has_prescription",
@@ -176,7 +180,7 @@ class PatientVisitSerializer(serializers.ModelSerializer):
     """One visit record as returned to the patient."""
     doctor_name = serializers.CharField(source="doctor.name")
     date = serializers.DateField(source="appointment_date")
-    opd_number = serializers.CharField()
+    opd_number = serializers.CharField(default="", allow_blank=True)
     medicines = serializers.SerializerMethodField()
     diagnosis = serializers.SerializerMethodField()
     complaint = serializers.SerializerMethodField()
@@ -235,4 +239,44 @@ class PublicAppointmentBookSerializer(serializers.Serializer):
     appointment_date = serializers.DateField()
     appointment_time = serializers.TimeField()
     is_emergency = serializers.BooleanField(default=False)
+    report_file = serializers.FileField(required=False, allow_null=True)
+    report_name = serializers.CharField(required=False, allow_blank=True, default="")
+    report_type = serializers.CharField(required=False, allow_blank=True, default="Lab Report")
+    session_token = serializers.CharField(required=False, allow_blank=True, default="")
 
+
+
+# ── Patient Reports ────────────────────────────────────────────────────────
+
+class PatientReportSerializer(serializers.ModelSerializer):
+    formatted_date = serializers.SerializerMethodField()
+    formatted_size = serializers.SerializerMethodField()
+    file_url = serializers.SerializerMethodField()
+
+    class Meta:
+        from .models import PatientReport
+        model = PatientReport
+        fields = [
+            "id", "report_name", "report_type", "file_url",
+            "file_size", "formatted_size", "mime_type",
+            "summary", "uploaded_at", "formatted_date",
+        ]
+
+    def get_formatted_date(self, obj):
+        return obj.uploaded_at.strftime("%d %b %Y, %I:%M %p")
+
+    def get_formatted_size(self, obj):
+        size = obj.file_size
+        if size >= 1024 * 1024:
+            return f"{size / (1024 * 1024):.2f} MB"
+        elif size >= 1024:
+            return f"{size / 1024:.1f} KB"
+        return f"{size} B"
+
+    def get_file_url(self, obj):
+        request = self.context.get("request")
+        if obj.file:
+            if request:
+                return request.build_absolute_uri(obj.file.url)
+            return obj.file.url
+        return ""

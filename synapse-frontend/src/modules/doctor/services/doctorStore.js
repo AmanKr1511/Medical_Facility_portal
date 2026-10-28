@@ -22,39 +22,150 @@ function save(key, data) {
   }
 }
 
+/**
+ * Normalizes appointment list according to the strict rule:
+ * - At most ONE patient in active queue can have status 'In Progress'
+ * - That single 'In Progress' patient MUST be placed at the very top (index 0, S.No. 1)
+ * - All other active patients must be in 'Waiting' or 'Reschedule' status
+ * - Rescheduled patients are kept at the end of the active queue
+ */
+export function normalizeAppointments(rawList) {
+  if (!Array.isArray(rawList)) return [];
+
+  const active = [];
+  const completedOrCancelled = [];
+
+  rawList.forEach((item) => {
+    if (item.status === 'Completed' || item.status === 'Cancelled') {
+      completedOrCancelled.push(item);
+    } else {
+      active.push(item);
+    }
+  });
+
+  // Find the first patient that is 'In Progress' or 'Consulting'
+  const inProgressIndex = active.findIndex(
+    (a) => a.status === 'In Progress' || a.status === 'Consulting'
+  );
+
+  let inProgressPatient = null;
+  const waitingOrRescheduled = [];
+
+  active.forEach((item, idx) => {
+    if (idx === inProgressIndex) {
+      inProgressPatient = { ...item, status: 'In Progress' };
+    } else {
+      // Any other active patient can only be 'Waiting' or 'Reschedule'
+      const status = item.status === 'Reschedule' ? 'Reschedule' : 'Waiting';
+      waitingOrRescheduled.push({ ...item, status });
+    }
+  });
+
+  const waitingList = waitingOrRescheduled.filter((a) => a.status === 'Waiting');
+  const rescheduleList = waitingOrRescheduled.filter((a) => a.status === 'Reschedule');
+
+  // Construct active list: 1. In Progress at the very top, 2. Waiting, 3. Reschedule
+  const activeSorted = [];
+  if (inProgressPatient) {
+    activeSorted.push(inProgressPatient);
+  }
+  activeSorted.push(...waitingList);
+  activeSorted.push(...rescheduleList);
+
+  return [...activeSorted, ...completedOrCancelled].map((item, idx) => ({
+    ...item,
+    sNo: idx + 1,
+  }));
+}
+
 export function getAppointments() {
-  return load(APPOINTMENTS_KEY, INITIAL_APPOINTMENTS);
+  const loaded = load(APPOINTMENTS_KEY, INITIAL_APPOINTMENTS);
+  const normalized = normalizeAppointments(loaded);
+  save(APPOINTMENTS_KEY, normalized);
+  return normalized;
 }
 
 export function saveAppointments(list) {
-  save(APPOINTMENTS_KEY, list);
+  const normalized = normalizeAppointments(list);
+  save(APPOINTMENTS_KEY, normalized);
+  return normalized;
 }
 
 export function getAppointmentById(id) {
   const list = getAppointments();
-  return list.find((a) => a.id === id) ?? list[0] ?? null;
+  return list.find((a) => String(a.id) === String(id)) ?? list[0] ?? null;
 }
 
 export function updateAppointmentStatus(id, newStatus) {
   const list = [...getAppointments()];
-  const index = list.findIndex((a) => a.id === id);
+  const index = list.findIndex((a) => String(a.id) === String(id));
   if (index === -1) return list;
 
   const target = { ...list[index], status: newStatus };
 
-  if (newStatus === 'Reschedule') {
-    // As per workflow: move appointment to the end of the waiting queue
-    target.status = 'Reschedule';
-    list.splice(index, 1);
-    list.push(target);
-  } else {
-    list[index] = target;
+  if (newStatus === 'In Progress') {
+    // 1. Any other active patient is reverted to 'Waiting'
+    const others = list
+      .filter((a) => String(a.id) !== String(id))
+      .map((a) => {
+        if (a.status === 'In Progress' || a.status === 'Consulting') {
+          return { ...a, status: 'Waiting' };
+        }
+        return a;
+      });
+
+    // 2. Separate active (waiting / reschedule) and completed/cancelled
+    const activeWaiting = others.filter((a) => a.status === 'Waiting');
+    const activeReschedule = others.filter((a) => a.status === 'Reschedule');
+    const completedOrCancelled = others.filter(
+      (a) => a.status === 'Completed' || a.status === 'Cancelled'
+    );
+
+    // 3. Move the single 'In Progress' patient to the very top (index 0, S.No 1)
+    const reordered = [target, ...activeWaiting, ...activeReschedule, ...completedOrCancelled];
+    const updated = reordered.map((item, idx) => ({ ...item, sNo: idx + 1 }));
+    save(APPOINTMENTS_KEY, updated);
+    return updated;
   }
 
-  // Recalculate S.No
-  const updated = list.map((item, idx) => ({ ...item, sNo: idx + 1 }));
-  saveAppointments(updated);
-  return updated;
+  if (newStatus === 'Reschedule') {
+    target.status = 'Reschedule';
+    const others = list.filter((a) => String(a.id) !== String(id));
+    const activeWaiting = others.filter(
+      (a) => a.status === 'In Progress' || a.status === 'Waiting'
+    );
+    const activeReschedule = others.filter((a) => a.status === 'Reschedule');
+    const completedOrCancelled = others.filter(
+      (a) => a.status === 'Completed' || a.status === 'Cancelled'
+    );
+
+    // Put rescheduled patient at the end of the active queue
+    const reordered = [...activeWaiting, ...activeReschedule, target, ...completedOrCancelled];
+    const updated = reordered.map((item, idx) => ({ ...item, sNo: idx + 1 }));
+    save(APPOINTMENTS_KEY, updated);
+    return updated;
+  }
+
+  if (newStatus === 'Waiting') {
+    target.status = 'Waiting';
+    list[index] = target;
+    const normalized = normalizeAppointments(list);
+    save(APPOINTMENTS_KEY, normalized);
+    return normalized;
+  }
+
+  if (newStatus === 'Completed' || newStatus === 'Cancelled') {
+    target.status = newStatus;
+    list[index] = target;
+    const normalized = normalizeAppointments(list);
+    save(APPOINTMENTS_KEY, normalized);
+    return normalized;
+  }
+
+  list[index] = target;
+  const normalized = normalizeAppointments(list);
+  save(APPOINTMENTS_KEY, normalized);
+  return normalized;
 }
 
 export function rescheduleCurrentAppointment() {
@@ -64,10 +175,17 @@ export function rescheduleCurrentAppointment() {
 
   const target = { ...list[inProgressIndex], status: 'Reschedule' };
   list.splice(inProgressIndex, 1);
-  list.push(target);
 
-  const updated = list.map((item, idx) => ({ ...item, sNo: idx + 1 }));
-  saveAppointments(updated);
+  const activeOthers = list.filter(
+    (a) => a.status !== 'Completed' && a.status !== 'Cancelled'
+  );
+  const completedOrCancelled = list.filter(
+    (a) => a.status === 'Completed' || a.status === 'Cancelled'
+  );
+
+  const reordered = [...activeOthers, target, ...completedOrCancelled];
+  const updated = reordered.map((item, idx) => ({ ...item, sNo: idx + 1 }));
+  save(APPOINTMENTS_KEY, updated);
   return updated;
 }
 
@@ -80,7 +198,7 @@ export function rescheduleAllAppointments() {
     return a;
   });
   const resequenced = updated.map((item, idx) => ({ ...item, sNo: idx + 1 }));
-  saveAppointments(resequenced);
+  save(APPOINTMENTS_KEY, resequenced);
   return resequenced;
 }
 
@@ -91,6 +209,14 @@ export function createEmergencyAppointment(payload = {}) {
     minute: '2-digit',
   });
   const dateStr = new Date().toLocaleDateString('en-GB');
+
+  // Any other active patient reverts to Waiting
+  const normalizedOthers = list.map((a) => {
+    if (a.status === 'In Progress' || a.status === 'Consulting') {
+      return { ...a, status: 'Waiting' };
+    }
+    return a;
+  });
 
   const emergencyApt = {
     id: `emg-${Date.now()}`,
@@ -137,25 +263,25 @@ export function createEmergencyAppointment(payload = {}) {
     isEmergency: true,
   };
 
-  const updated = [emergencyApt, ...list].map((item, idx) => ({
+  const updated = [emergencyApt, ...normalizedOthers].map((item, idx) => ({
     ...item,
     sNo: idx + 1,
   }));
-  saveAppointments(updated);
+  save(APPOINTMENTS_KEY, updated);
   return emergencyApt;
 }
 
 export function updateAppointmentConsultation(id, updates) {
   const list = getAppointments();
-  const updated = list.map((a) => (a.id === id ? { ...a, ...updates } : a));
+  const updated = list.map((a) => (String(a.id) === String(id) ? { ...a, ...updates } : a));
   saveAppointments(updated);
-  return updated.find((a) => a.id === id);
+  return updated.find((a) => String(a.id) === String(id));
 }
 
 export function finalizeOpdSlip(appointmentId, opdData, deliveryOption) {
   // 1. Mark appointment as completed
   const appointments = getAppointments().map((a) => {
-    if (a.id === appointmentId) {
+    if (String(a.id) === String(appointmentId)) {
       return {
         ...a,
         status: 'Completed',

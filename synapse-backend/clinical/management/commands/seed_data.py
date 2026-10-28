@@ -222,6 +222,7 @@ class Command(BaseCommand):
             defaults={
                 "appointment_time": time(9, 30),
                 "token_number": 1,
+                "opd_number": f"OPD-{today.strftime('%m%d')}-001",
                 "is_emergency": True,
                 "status": AppointmentStatus.COMPLETED,
                 "reason": "Acute allergic urticaria and wheezing",
@@ -259,6 +260,7 @@ class Command(BaseCommand):
             defaults={
                 "appointment_time": time(10, 0),
                 "token_number": 2,
+                "opd_number": f"OPD-{today.strftime('%m%d')}-002",
                 "is_emergency": False,
                 "status": AppointmentStatus.COMPLETED,
                 "reason": "Right ankle sprain during football match",
@@ -292,6 +294,7 @@ class Command(BaseCommand):
             defaults={
                 "appointment_time": time(10, 30),
                 "token_number": 3,
+                "opd_number": f"OPD-{today.strftime('%m%d')}-003",
                 "is_emergency": False,
                 "status": AppointmentStatus.COMPLETED,
                 "reason": "Bacterial pharyngitis and acid reflux",
@@ -324,6 +327,7 @@ class Command(BaseCommand):
             defaults={
                 "appointment_time": time(11, 0),
                 "token_number": 4,
+                "opd_number": f"OPD-{today.strftime('%m%d')}-004",
                 "is_emergency": False,
                 "status": AppointmentStatus.BOOKED,
                 "reason": "Persistent dry cough and low-grade evening fever",
@@ -342,6 +346,7 @@ class Command(BaseCommand):
             defaults={
                 "appointment_time": time(10, 15),
                 "token_number": 8,
+                "opd_number": f"OPD-{past_dates[0].strftime('%m%d')}-008",
                 "status": AppointmentStatus.COMPLETED,
                 "reason": "High fever and body ache",
             },
@@ -386,6 +391,7 @@ class Command(BaseCommand):
             defaults={
                 "appointment_time": time(11, 30),
                 "token_number": 12,
+                "opd_number": f"OPD-{past_dates[1].strftime('%m%d')}-012",
                 "status": AppointmentStatus.COMPLETED,
                 "reason": "Epigastric pain and sour burps",
             },

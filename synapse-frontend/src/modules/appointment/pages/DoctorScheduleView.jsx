@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { Avatar, Button, Icon, LogoMark } from '../../../core/ui';
 import { formatDate } from '../../../core/utils/date';
 import { getDoctors } from '../services/appointmentService';
+import '../appointment.css';
 
 export default function DoctorScheduleView() {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ export default function DoctorScheduleView() {
   const [selectedSlot, setSelectedSlot] = useState('');
 
   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
     getDoctors().then((data) => {
       setDoctors(data);
       if (data.length > 0) {
@@ -41,6 +43,7 @@ export default function DoctorScheduleView() {
         doctorName: activeDoctor?.name,
         date: selectedDate,
         time: selectedSlot,
+        consultation_source: 'consult_later',
       },
     });
   };

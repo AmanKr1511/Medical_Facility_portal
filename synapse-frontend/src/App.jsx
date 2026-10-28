@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { ProtectedRoute, homePathForRole, useAuth } from './core/auth';
 import RoleLayout from './core/layout/RoleLayout';
 import { appointmentRoutes, loginRoutes, modules } from './modules';
+import PatientQrUploadPage from './modules/patient/pages/PatientQrUploadPage';
 
 /**
  * Routing is generated from the module registry (src/modules/index.js).
@@ -17,6 +18,9 @@ export default function App() {
         element={<Navigate to={isAuthenticated ? homePathForRole(user.role) : '/login'} replace />}
       />
 
+      {/* Public QR Code Patient Report Upload Page */}
+      <Route path="/upload/:token" element={<PatientQrUploadPage />} />
+
       {loginRoutes.map((r) => (
         <Route key={r.path} {...r} />
       ))}
@@ -24,7 +28,6 @@ export default function App() {
       {appointmentRoutes.map((r) => (
         <Route key={r.path} {...r} />
       ))}
-
 
       {modules.map((m) => (
         <Route

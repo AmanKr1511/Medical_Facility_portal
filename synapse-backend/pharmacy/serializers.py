@@ -99,7 +99,7 @@ class OPDSerializer(serializers.ModelSerializer):
     patient_name = serializers.CharField(source="student.name")
     doctor_name = serializers.CharField(source="doctor.name")
     date = serializers.DateField(source="appointment_date")
-    opd_number = serializers.CharField()
+    opd_number = serializers.CharField(default="", allow_blank=True)
     medicines = serializers.SerializerMethodField()
     diagnosis = serializers.SerializerMethodField()
     complaint = serializers.SerializerMethodField()

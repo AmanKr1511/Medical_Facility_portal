@@ -43,9 +43,21 @@ export default function DoctorDashboard() {
     setAppointments(list);
     setStats(getDoctorStats(list));
 
+    const handleStorage = (e) => {
+      if (e.key === 'synapse.doctor.appointments') {
+        const updated = getAppointments();
+        setAppointments(updated);
+        setStats(getDoctorStats(updated));
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+
     // Live clock: update every second
     const timer = setInterval(() => setCurrentDateTime(new Date()), 1000);
-    return () => clearInterval(timer);
+    return () => {
+      clearInterval(timer);
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
   const handleStatusChange = (id, newStatus) => {
@@ -55,10 +67,7 @@ export default function DoctorDashboard() {
   };
 
   const handleView = (aptId) => {
-    const target = appointments.find((a) => a.id === aptId);
-    if (target && target.status === 'Waiting') {
-      handleStatusChange(aptId, 'In Progress');
-    }
+    handleStatusChange(aptId, 'In Progress');
     navigate(`/doctor/consultation/${aptId}`);
   };
 
@@ -96,19 +105,15 @@ export default function DoctorDashboard() {
   const inProgressPatient = activeAppointments.find((a) => a.status === 'In Progress');
 
   // Next patient logic:
-  // Go to the next patient in the active queue who is NOT in progress
+  // Go to the first waiting or rescheduled patient in the active queue
   const nextPatient =
-    activeAppointments.find(
-      (a) => a.status !== 'In Progress' && a.status !== 'Cancelled'
-    ) ||
-    activeAppointments.find((a) => a.status !== 'In Progress') ||
+    activeAppointments.find((a) => a.status === 'Waiting') ||
+    activeAppointments.find((a) => a.status === 'Reschedule') ||
     null;
 
   const handleNextPatient = () => {
     if (!nextPatient) return;
-    if (nextPatient.status === 'Waiting' || nextPatient.status === 'Reschedule') {
-      handleStatusChange(nextPatient.id, 'In Progress');
-    }
+    handleStatusChange(nextPatient.id, 'In Progress');
     navigate(`/doctor/consultation/${nextPatient.id}`);
   };
 

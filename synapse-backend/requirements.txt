@@ -10,3 +10,4 @@ python-decouple==3.8
 google-api-python-client>=2.0.0
 google-auth>=2.0.0
 google-auth-httplib2>=0.1.0
+qrcode[pil]>=7.4.2
