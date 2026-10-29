@@ -33,7 +33,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # 3. Django Web API Backend
+  # 3. Django Web API Backend (Live Auto-Reloading)
   synapse-django:
     build:
       context: ./synapse-backend
@@ -47,6 +47,7 @@ services:
     volumes:
       - ./synapse-backend:/app
       - ./synapse-backend/backups:/app/backups
+      - ./synapse-backend/media:/app/media
     ports:
       - "8000:8000"
     environment:
@@ -59,6 +60,7 @@ services:
       - DB_HOST=synapse-postgres
       - DB_PORT=5432
       - REDIS_URL=redis://synapse-redis:6379/0
+      - FRONTEND_BASE_URL=http://localhost:5173
       - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://localhost
     depends_on:
       synapse-postgres:
@@ -77,6 +79,7 @@ services:
     volumes:
       - ./synapse-backend:/app
       - ./synapse-backend/backups:/app/backups
+      - ./synapse-backend/media:/app/media
     environment:
       - SECRET_KEY=synapse-django-dev-secret-key-iitrpr-2026-safe-for-local
       - DEBUG=True
@@ -87,6 +90,7 @@ services:
       - DB_HOST=synapse-postgres
       - DB_PORT=5432
       - REDIS_URL=redis://synapse-redis:6379/0
+      - FRONTEND_BASE_URL=http://localhost:5173
     depends_on:
       synapse-postgres:
         condition: service_healthy
@@ -114,22 +118,27 @@ services:
       - DB_HOST=synapse-postgres
       - DB_PORT=5432
       - REDIS_URL=redis://synapse-redis:6379/0
+      - FRONTEND_BASE_URL=http://localhost:5173
     depends_on:
       synapse-postgres:
         condition: service_healthy
       synapse-redis:
         condition: service_healthy
 
-  # 6. React Vite Production Frontend (Nginx SPA + Reverse Proxy)
+  # 6. React Vite Dev Frontend (Live HMR Hot-Reloading)
   synapse-frontend:
     build:
       context: ./synapse-frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     container_name: synapse-frontend
     restart: unless-stopped
     ports:
-      - "5173:80"
-      - "8080:80"
+      - "5173:5173"
+    volumes:
+      - ./synapse-frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_BACKEND_URL=http://synapse-django:8000
     depends_on:
       synapse-django:
         condition: service_started

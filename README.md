@@ -6,10 +6,17 @@ Digital Outpatient Department (OPD) platform for the **IIT Ropar Medical Center*
 
 ## 🚀 One-Command Docker Setup
 
-The entire multi-container stack can be launched with a single command from the root directory:
+The development stack runs with **live hot reloading** (Vite HMR for frontend and Django auto-reload for backend) so any file changes you make are reflected immediately without rebuilding:
 
 ```bash
-docker compose up --build
+# Default (Development mode with live hot reloading on port 5173):
+docker compose up
+
+# Or explicitly:
+docker compose -f docker-compose.dev.yml up
+
+# Production mode (Optimized Nginx bundle):
+docker compose -f docker-compose.prod.yml up -d --build
 ```
 
 This will automatically build, configure, migrate, seed demo fixtures, and start all 6 services:
