@@ -1,0 +1,148 @@
+services:
+  # 1. PostgreSQL 16 Database
+  synapse-postgres:
+    image: postgres:16-alpine
+    container_name: synapse-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: synapse_db
+      POSTGRES_USER: synapse_user
+      POSTGRES_PASSWORD: synapse_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U synapse_user -d synapse_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Redis Message Broker & Cache
+  synapse-redis:
+    image: redis:7-alpine
+    container_name: synapse-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 3. Django Web API Backend (Live Auto-Reloading)
+  synapse-django:
+    build:
+      context: ./synapse-backend
+      dockerfile: Dockerfile
+    container_name: synapse-django
+    restart: unless-stopped
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py seed_data &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./synapse-backend:/app
+      - ./synapse-backend/backups:/app/backups
+      - ./synapse-backend/media:/app/media
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=synapse-django-dev-secret-key-iitrpr-2026-safe-for-local
+      - DEBUG=True
+      - DB_ENGINE=postgresql
+      - DB_NAME=synapse_db
+      - DB_USER=synapse_user
+      - DB_PASSWORD=synapse_pass
+      - DB_HOST=synapse-postgres
+      - DB_PORT=5432
+      - REDIS_URL=redis://synapse-redis:6379/0
+      - FRONTEND_BASE_URL=http://localhost:5173
+      - CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,http://localhost:8080,http://localhost
+    depends_on:
+      synapse-postgres:
+        condition: service_healthy
+      synapse-redis:
+        condition: service_healthy
+
+  # 4. Celery Worker (Appointment Reminders & Confirmation Emails)
+  synapse-celery-worker:
+    build:
+      context: ./synapse-backend
+      dockerfile: Dockerfile
+    container_name: synapse-celery-worker
+    restart: unless-stopped
+    command: celery -A config worker --loglevel=info
+    volumes:
+      - ./synapse-backend:/app
+      - ./synapse-backend/backups:/app/backups
+      - ./synapse-backend/media:/app/media
+    environment:
+      - SECRET_KEY=synapse-django-dev-secret-key-iitrpr-2026-safe-for-local
+      - DEBUG=True
+      - DB_ENGINE=postgresql
+      - DB_NAME=synapse_db
+      - DB_USER=synapse_user
+      - DB_PASSWORD=synapse_pass
+      - DB_HOST=synapse-postgres
+      - DB_PORT=5432
+      - REDIS_URL=redis://synapse-redis:6379/0
+      - FRONTEND_BASE_URL=http://localhost:5173
+    depends_on:
+      synapse-postgres:
+        condition: service_healthy
+      synapse-redis:
+        condition: service_healthy
+
+  # 5. Celery Beat Scheduler (5-min Reminders & 11:00 PM Nightly pg_dump Backup)
+  synapse-celery-beat:
+    build:
+      context: ./synapse-backend
+      dockerfile: Dockerfile
+    container_name: synapse-celery-beat
+    restart: unless-stopped
+    command: celery -A config beat -s /tmp/celerybeat-schedule --loglevel=info
+    volumes:
+      - ./synapse-backend:/app
+      - ./synapse-backend/backups:/app/backups
+    environment:
+      - SECRET_KEY=synapse-django-dev-secret-key-iitrpr-2026-safe-for-local
+      - DEBUG=True
+      - DB_ENGINE=postgresql
+      - DB_NAME=synapse_db
+      - DB_USER=synapse_user
+      - DB_PASSWORD=synapse_pass
+      - DB_HOST=synapse-postgres
+      - DB_PORT=5432
+      - REDIS_URL=redis://synapse-redis:6379/0
+      - FRONTEND_BASE_URL=http://localhost:5173
+    depends_on:
+      synapse-postgres:
+        condition: service_healthy
+      synapse-redis:
+        condition: service_healthy
+
+  # 6. React Vite Dev Frontend (Live HMR Hot-Reloading)
+  synapse-frontend:
+    build:
+      context: ./synapse-frontend
+      dockerfile: Dockerfile.dev
+    container_name: synapse-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./synapse-frontend:/app
+      - /app/node_modules
+    environment:
+      - VITE_BACKEND_URL=http://synapse-django:8000
+    depends_on:
+      synapse-django:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  redis_data:
